@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2020-05-12T05:09:02.394Z</updated>
+  <updated>2020-05-12T13:29:38.000Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -15,6 +15,35 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>高并发常见方案</title>
+    <link href="http://yoursite.com/2020/05/12/%E9%AB%98%E5%B9%B6%E5%8F%91/"/>
+    <id>http://yoursite.com/2020/05/12/%E9%AB%98%E5%B9%B6%E5%8F%91/</id>
+    <published>2020-05-12T13:29:38.000Z</published>
+    <updated>2020-05-12T13:29:38.000Z</updated>
+    
+    <content type="html"><![CDATA[<h3 id="高并发写"><a href="#高并发写" class="headerlink" title="高并发写"></a>高并发写</h3><ol><li>数据分片<ul><li>数据库分库分表</li><li>JDK concurrentHashMap实现</li><li>kafka的partition</li><li>ES的分布式索引</li></ul></li><li>任务分片<ul><li>CPU的指令流水线</li><li>Map/Reduce</li><li>Tomcat 1+N+M 网络模型：1个监听线程，N个IO线程负责对socket进行读写，M个worker对请求做逻辑处理。</li></ul></li><li>异步化：异步接口、异步IO<ul><li>短信验证码注册/登录</li><li>订单系统</li><li>广告计费系统，异步，多消息合并扣费</li><li>Kafka的Pipeline</li></ul></li><li>WAL技术<ul><li>数据库redo log</li><li>LSM树 </li></ul></li><li>批量<ul><li>kafka的百万qps写入:partition分片，磁盘顺序写入，批量（leader/follower之间的批量，本地client之间的批量）</li><li>mysql的group commit机制，对多事务的redo log批量flush</li></ul></li></ol><h3 id="高并发读"><a href="#高并发读" class="headerlink" title="高并发读"></a>高并发读</h3><ol><li>加缓存<ul><li>本地缓存/redis/memcached</li></ul></li><li>增加副本冗余<ul><li>MySQL master/slave</li><li>CDN 静态文件加速</li></ul></li><li>并发读<ul><li>异步RPC</li><li>冗余请求，降低失败率</li></ul></li></ol><h3 id=""><a href="#" class="headerlink" title=""></a></h3>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h3 id=&quot;高并发写&quot;&gt;&lt;a href=&quot;#高并发写&quot; class=&quot;headerlink&quot; title=&quot;高并发写&quot;&gt;&lt;/a&gt;高并发写&lt;/h3&gt;&lt;ol&gt;
+&lt;li&gt;数据分片&lt;ul&gt;
+&lt;li&gt;数据库分库分表&lt;/li&gt;
+&lt;li&gt;JDK concurrentHashMap实现&lt;/l
+      
+    
+    </summary>
+    
+    
+      <category term="分布式，方案总结" scheme="http://yoursite.com/categories/%E5%88%86%E5%B8%83%E5%BC%8F%EF%BC%8C%E6%96%B9%E6%A1%88%E6%80%BB%E7%BB%93/"/>
+    
+    
+      <category term="分布式" scheme="http://yoursite.com/tags/%E5%88%86%E5%B8%83%E5%BC%8F/"/>
+    
+  </entry>
   
   <entry>
     <title>多副本一致性</title>

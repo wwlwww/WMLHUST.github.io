@@ -20,14 +20,19 @@
     var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Hexo">
-<meta property="og:url" content="http://yoursite.com/tags/%E5%88%86%E5%B8%83%E5%BC%8F/index.html">
+  <meta name="description" content="高并发写 数据分片 数据库分库分表 JDK concurrentHashMap实现 kafka的partition ES的分布式索引   任务分片 CPU的指令流水线 Map&#x2F;Reduce Tomcat 1+N+M 网络模型：1个监听线程，N个IO线程负责对socket进行读写，M个worker对请求做逻辑处理。   异步化：异步接口、异步IO 短信验证码注册&#x2F;登录 订单系统 广告计费系统，异步，">
+<meta property="og:type" content="article">
+<meta property="og:title" content="高并发常见方案">
+<meta property="og:url" content="http://yoursite.com/2020/05/12/%E9%AB%98%E5%B9%B6%E5%8F%91/index.html">
 <meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="高并发写 数据分片 数据库分库分表 JDK concurrentHashMap实现 kafka的partition ES的分布式索引   任务分片 CPU的指令流水线 Map&#x2F;Reduce Tomcat 1+N+M 网络模型：1个监听线程，N个IO线程负责对socket进行读写，M个worker对请求做逻辑处理。   异步化：异步接口、异步IO 短信验证码注册&#x2F;登录 订单系统 广告计费系统，异步，">
+<meta property="article:published_time" content="2020-05-12T13:29:38.000Z">
+<meta property="article:modified_time" content="2020-05-12T13:29:38.000Z">
 <meta property="article:author" content="John Doe">
+<meta property="article:tag" content="分布式">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="http://yoursite.com/tags/%E5%88%86%E5%B8%83%E5%BC%8F/">
+<link rel="canonical" href="http://yoursite.com/2020/05/12/%E9%AB%98%E5%B9%B6%E5%8F%91/">
 
 
 <script id="page-configurations">
@@ -35,12 +40,12 @@
   CONFIG.page = {
     sidebar: "",
     isHome : false,
-    isPost : false,
+    isPost : true,
     lang   : 'zh-Hans'
   };
 </script>
 
-  <title>Tag: 分布式 | Hexo</title>
+  <title>高并发常见方案 | Hexo</title>
   
 
 
@@ -154,77 +159,146 @@
         <div class="content-wrap">
           
 
-          <div class="content tag">
+          <div class="content post posts-expand">
             
 
+    
   
   
-  
-  <div class="post-block">
-    <div class="posts-collapse">
-      <div class="collection-title">
-        <h2 class="collection-header">分布式
-          <small>Tag</small>
-        </h2>
-      </div>
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/05/12/%E9%AB%98%E5%B9%B6%E5%8F%91/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="John Doe">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          高并发常见方案
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-05-12 21:29:38" itemprop="dateCreated datePublished" datetime="2020-05-12T21:29:38+08:00">2020-05-12</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F%EF%BC%8C%E6%96%B9%E6%A1%88%E6%80%BB%E7%BB%93/" itemprop="url" rel="index"><span itemprop="name">分布式，方案总结</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
       
-    <div class="collection-year">
-      <span class="collection-header">2020</span>
+        <h3 id="高并发写"><a href="#高并发写" class="headerlink" title="高并发写"></a>高并发写</h3><ol>
+<li>数据分片<ul>
+<li>数据库分库分表</li>
+<li>JDK concurrentHashMap实现</li>
+<li>kafka的partition</li>
+<li>ES的分布式索引</li>
+</ul>
+</li>
+<li>任务分片<ul>
+<li>CPU的指令流水线</li>
+<li>Map/Reduce</li>
+<li>Tomcat 1+N+M 网络模型：1个监听线程，N个IO线程负责对socket进行读写，M个worker对请求做逻辑处理。</li>
+</ul>
+</li>
+<li>异步化：异步接口、异步IO<ul>
+<li>短信验证码注册/登录</li>
+<li>订单系统</li>
+<li>广告计费系统，异步，多消息合并扣费</li>
+<li>Kafka的Pipeline</li>
+</ul>
+</li>
+<li>WAL技术<ul>
+<li>数据库redo log</li>
+<li>LSM树 </li>
+</ul>
+</li>
+<li>批量<ul>
+<li>kafka的百万qps写入:partition分片，磁盘顺序写入，批量（leader/follower之间的批量，本地client之间的批量）</li>
+<li>mysql的group commit机制，对多事务的redo log批量flush</li>
+</ul>
+</li>
+</ol>
+<h3 id="高并发读"><a href="#高并发读" class="headerlink" title="高并发读"></a>高并发读</h3><ol>
+<li>加缓存<ul>
+<li>本地缓存/redis/memcached</li>
+</ul>
+</li>
+<li>增加副本冗余<ul>
+<li>MySQL master/slave</li>
+<li>CDN 静态文件加速</li>
+</ul>
+</li>
+<li>并发读<ul>
+<li>异步RPC</li>
+<li>冗余请求，降低失败率</li>
+</ul>
+</li>
+</ol>
+<h3 id=""><a href="#" class="headerlink" title=""></a></h3>
     </div>
 
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
+    
+    
+    
 
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-05-12T21:29:38+08:00"
-              content="2020-05-12">
-          05-12
-        </time>
-      </div>
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/" rel="tag"># 分布式</a>
+          </div>
 
-      <div class="post-title">
-          <a class="post-title-link" href="/2020/05/12/%E9%AB%98%E5%B9%B6%E5%8F%91/" itemprop="url">
-            <span itemprop="name">高并发常见方案</span>
-          </a>
-      </div>
+        
 
-    </header>
-  </article>
 
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-05-12T11:23:33+08:00"
-              content="2020-05-12">
-          05-12
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2020/05/12/%E5%A4%9A%E5%89%AF%E6%9C%AC%E4%B8%80%E8%87%B4%E6%80%A7/" itemprop="url">
-            <span itemprop="name">多副本一致性</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/05/12/%E5%A4%9A%E5%89%AF%E6%9C%AC%E4%B8%80%E8%87%B4%E6%80%A7/" rel="prev" title="多副本一致性">
+      <i class="fa fa-chevron-left"></i> 多副本一致性
+    </a></div>
+      <div class="post-nav-item"></div>
     </div>
-  </div>
+      </footer>
+    
+  </article>
   
   
-  
-
   
 
 
 
           </div>
           
+    
+  <div class="comments">
+    <div id="lv-container" data-id="city" data-uid="MTAyMC81MDA3NC8yNjU2NQ=="></div>
+  </div>
+  
 
 <script>
   window.addEventListener('tabs:register', () => {
@@ -271,6 +345,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#高并发写"><span class="nav-number">1.</span> <span class="nav-text">高并发写</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#高并发读"><span class="nav-number">2.</span> <span class="nav-text">高并发读</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">3.</span> <span class="nav-text"></span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -384,6 +459,21 @@
 
   
 
+<script>
+NexT.utils.loadComments(document.querySelector('#lv-container'), () => {
+  window.livereOptions = {
+    refer: location.pathname.replace(CONFIG.root, '').replace('index.html', '')
+  };
+  (function(d, s) {
+    var j, e = d.getElementsByTagName(s)[0];
+    if (typeof LivereTower === 'function') { return; }
+    j = d.createElement(s);
+    j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+    j.async = true;
+    e.parentNode.insertBefore(j, e);
+  })(document, 'script');
+});
+</script>
 
 </body>
 </html>
