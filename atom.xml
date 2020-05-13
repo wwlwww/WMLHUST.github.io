@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2020-05-12T13:35:11.000Z</updated>
+  <updated>2020-05-13T02:21:07.000Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -15,6 +15,33 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>各种树结构</title>
+    <link href="http://yoursite.com/2020/05/13/%E5%90%84%E7%A7%8D%E6%A0%91%E7%BB%93%E6%9E%84/"/>
+    <id>http://yoursite.com/2020/05/13/%E5%90%84%E7%A7%8D%E6%A0%91%E7%BB%93%E6%9E%84/</id>
+    <published>2020-05-13T02:21:07.000Z</published>
+    <updated>2020-05-13T02:21:07.000Z</updated>
+    
+    <content type="html"><![CDATA[<h3 id="B树-vs-B-树-vs-B-树"><a href="#B树-vs-B-树-vs-B-树" class="headerlink" title="B树 vs B+树 vs B*树"></a>B树 vs B+树 vs B*树</h3><ol><li><p>B树，B是指发明人的名字</p><ul><li>平衡多路搜索树</li><li>保持键值有序，以顺序遍历</li><li>使用不完全填充的节点块，来加速插入和删除</li><li>节点块至少半满，提升空间利用率</li></ul></li><li><p>B+树 VS B树</p><ul><li>非叶子节点，只保存索引：从而可以减少索引树的大小，内存里可以保存更多的索引。由于每次都需要走到叶子节点，查询时间也更稳定。</li><li>叶子节点之间，增加链指针，方便遍历</li></ul></li><li><p>B*树<br>在B+树的基础上</p><ul><li>非根和非叶子节点，增加指向兄弟的指针</li><li>插入时，如果节点已满，会检查兄弟节点是否满，未满，则向兄弟节点转移数据；已满，则从当前节点和兄弟节点，各拿出1/3数据，创建一个新节点。<br>从而节点空间利用率更高，节点分裂的情况也减少。</li></ul></li></ol><h3 id="红黑树"><a href="#红黑树" class="headerlink" title="红黑树"></a>红黑树</h3><ol><li>也是一种BST(二叉搜索树)，但是不要求完全平衡</li><li>牺牲部分平衡性，达到较快的插入和删除性能</li><li>使用场景：linux CFS调度，nginx timer等</li><li>vs B树: B树作为多路搜索，能够在树深较小的情况下，支持更多的数据节点。对于磁盘类操作，可以避免大量的随机IO（一个磁盘page，可以读取到更多的索引，类似MySQL），从而优化读写性能。而红黑树一般整棵树都在内存里，不涉及到磁盘操作，支持的数据量较小，但是由于各种操作优于BST，因此常用于涉及到排序、搜索的场景。比如CFS，为了保证公平调度，每次选取当前执行总时间最小的线程执行。</li></ol><h3 id="LSM，Log-Structured-Merged-Tree"><a href="#LSM，Log-Structured-Merged-Tree" class="headerlink" title="LSM，Log-Structured Merged Tree"></a>LSM，Log-Structured Merged Tree</h3><ol><li>核心思想：<strong>放弃部分读性能，提高写性能。</strong>适用于kv存储</li><li>应用：rocksDB，levelDB，hbase<ul><li>rocksDB：c++编写的kv存储引擎</li><li>levelDB：kv存储引擎</li><li>hbase: 分布式存储，列数据库，应对大量数据（亿级以上）</li></ul></li><li>内存中的memtable，磁盘上的sstable。读取的时候，需要遍历sstable，这里的 优化是，使用是bloom filter，确定一个Key是否在sstable里。</li><li>一般LSM-Trees会配合内存排序，内存里将写数据缓冲（通常是一个(Red-Black Tree)红黑树结构）。等积累得足够多之后，使用归并排序将数据合并，写入磁盘。由于。</li><li>参考资料<ul><li><a href="http://blog.fatedier.com/2016/06/15/learn-lsm-tree/" target="_blank" rel="noopener">http://blog.fatedier.com/2016/06/15/learn-lsm-tree/</a></li></ul></li></ol><h3 id="lsm-vs-b-树"><a href="#lsm-vs-b-树" class="headerlink" title="lsm vs b+树"></a>lsm vs b+树</h3><ol><li><p>查询过程<br>为了快速查询，一个办法是建立hash索引，但是hash索引占用空间太大，而且不支持区间查询。另一个办法是，事先对数据进行排序，B+树，把排序的操作放在了写入的时候，读的时候便轻松一些。   </p></li><li><p>写过程<br> 但是B树面对高并发写的时候，压力很大。B树把所有的压力都放到了写操作的时候，从根节点索引到数据存储的位置，可能需要多次读文件；真正插入的时候，又可能会引起page的分裂，多次写文件。   </p><p> LSM在写的时候，直接写入内存，然后利用红黑树保持内存中的数据有序，由后台线程定期或被触发，去merge和持久化到磁盘。也会使用WAL方式记录log，避免数据丢失。  </p><p> 当写比读多时，LSM树相比于B树有更好的性能。因为随着insert操作，为了维护B树结构，节点分裂。读磁盘的随机读写概率会变大，性能会逐渐减弱。LSM把多次IO，批量变成一次IO，复用了磁盘寻道时间，极大提升效率。</p></li></ol>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h3 id=&quot;B树-vs-B-树-vs-B-树&quot;&gt;&lt;a href=&quot;#B树-vs-B-树-vs-B-树&quot; class=&quot;headerlink&quot; title=&quot;B树 vs B+树 vs B*树&quot;&gt;&lt;/a&gt;B树 vs B+树 vs B*树&lt;/h3&gt;&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;B树，B是
+      
+    
+    </summary>
+    
+    
+      <category term="算法" scheme="http://yoursite.com/categories/%E7%AE%97%E6%B3%95/"/>
+    
+    
+      <category term="算法" scheme="http://yoursite.com/tags/%E7%AE%97%E6%B3%95/"/>
+    
+  </entry>
   
   <entry>
     <title>分布式锁</title>
