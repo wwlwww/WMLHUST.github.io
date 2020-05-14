@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2020-05-14T03:03:32.000Z</updated>
+  <updated>2020-05-14T03:06:27.000Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -15,6 +15,36 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>CAP</title>
+    <link href="http://yoursite.com/2020/05/14/CAP/"/>
+    <id>http://yoursite.com/2020/05/14/CAP/</id>
+    <published>2020-05-14T03:06:27.000Z</published>
+    <updated>2020-05-14T03:06:27.000Z</updated>
+    
+    <content type="html"><![CDATA[<h3 id="CAP"><a href="#CAP" class="headerlink" title="CAP"></a>CAP</h3><ol><li>C，一致性，多副本一致性，事务一致性等</li><li>A，可用性</li><li>P，分区容忍性</li></ol><h3 id="理解"><a href="#理解" class="headerlink" title="理解"></a>理解</h3><ol><li>最大的误解：<strong>CAP可以三选二</strong><br>实际上P是必然存在的，只能在C和A（一致性和可用性）之间权衡。实际中大多是AP或CP系统，很少有CA的系统。</li><li>AP系统，追求可用性，放弃一致性。比如MySQL主从等。</li><li>CP系统，追求强一致性，牺牲一定的可用性。raft、zab协议。而此时的一致性，也只是对客户端看来是一致的，对内部看，是最终一致，因为同步数据总需要时间。</li><li>对于CA系统，因为要实现A（高可用），就必然有冗余，有冗余就必然存在P。比如MySQL，内部事务实现强一致性C，但是没有A，单机也不存在P。</li><li>只要引入冗余，实现的高可用（A），就一定存在P。如果还想兼顾一致性（C），那么一定不是真的A。<strong>因此实际系统中，总是在CA之间做权衡。放弃某一方，就编程了AP或CP。</strong></li></ol>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h3 id=&quot;CAP&quot;&gt;&lt;a href=&quot;#CAP&quot; class=&quot;headerlink&quot; title=&quot;CAP&quot;&gt;&lt;/a&gt;CAP&lt;/h3&gt;&lt;ol&gt;
+&lt;li&gt;C，一致性，多副本一致性，事务一致性等&lt;/li&gt;
+&lt;li&gt;A，可用性&lt;/li&gt;
+&lt;li&gt;P，分区容忍性&lt;/li&gt;
+&lt;/o
+      
+    
+    </summary>
+    
+    
+      <category term="分布式" scheme="http://yoursite.com/categories/%E5%88%86%E5%B8%83%E5%BC%8F/"/>
+    
+    
+      <category term="分布式" scheme="http://yoursite.com/tags/%E5%88%86%E5%B8%83%E5%BC%8F/"/>
+    
+  </entry>
   
   <entry>
     <title>map并发安全实现原理</title>
