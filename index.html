@@ -378,8 +378,8 @@
 </ul>
 </li>
 </ol>
-<h2 id="4-事务实现"><a href="#4-事务实现" class="headerlink" title="4. 事务实现"></a>4. 事务实现</h2><h3 id="1-WAL-Write-Ahead-Log"><a href="#1-WAL-Write-Ahead-Log" class="headerlink" title="1. WAL, Write-Ahead Log"></a>1. WAL, Write-Ahead Log</h3><p>内存操作数据 + write-ahead log</p>
-<h3 id="2-Redo-Log的逻辑与物理结构"><a href="#2-Redo-Log的逻辑与物理结构" class="headerlink" title="2. Redo Log的逻辑与物理结构"></a>2. Redo Log的逻辑与物理结构</h3><ol>
+<h3 id="4-事务实现"><a href="#4-事务实现" class="headerlink" title="4. 事务实现"></a>4. 事务实现</h3><h4 id="1-WAL-Write-Ahead-Log"><a href="#1-WAL-Write-Ahead-Log" class="headerlink" title="1. WAL, Write-Ahead Log"></a>1. WAL, Write-Ahead Log</h4><p>内存操作数据 + write-ahead log</p>
+<h4 id="2-Redo-Log的逻辑与物理结构"><a href="#2-Redo-Log的逻辑与物理结构" class="headerlink" title="2. Redo Log的逻辑与物理结构"></a>2. Redo Log的逻辑与物理结构</h4><ol>
 <li>redo log 物理组成结构<ol>
 <li>一个逻辑事务 包含 多个物理事务mtr，Mini Transaction</li>
 <li>每个mtr对应一个LSN</li>
@@ -410,7 +410,7 @@
 </ol>
 </li>
 </ol>
-<h3 id="3-Undo-log"><a href="#3-Undo-log" class="headerlink" title="3. Undo log"></a>3. Undo log</h3><ol>
+<h4 id="3-Undo-log"><a href="#3-Undo-log" class="headerlink" title="3. Undo log"></a>3. Undo log</h4><ol>
 <li>redolog按LSN的顺序，而undolog没有顺序，多个事务并行写。每条日志除下记录主键ID和数据外，还有两个字段：修改记录的事务ID和回滚指针，用来串联所有历史版本，就是MVCC的两个隐藏列。</li>
 <li>undo log 只在commit的过程中有用，一旦事务commit了，就可以删掉undo log</li>
 <li>通俗一点，修改行前，先把行拷贝一份出来，这些历史版本形成一个链表。</li>
