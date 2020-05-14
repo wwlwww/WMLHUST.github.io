@@ -160,6 +160,90 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/05/14/map%E5%B9%B6%E5%8F%91%E5%AE%89%E5%85%A8%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="John Doe">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/05/14/map%E5%B9%B6%E5%8F%91%E5%AE%89%E5%85%A8%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/" class="post-title-link" itemprop="url">map并发安全实现原理</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-05-14 11:03:32" itemprop="dateCreated datePublished" datetime="2020-05-14T11:03:32+08:00">2020-05-14</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" itemprop="url" rel="index"><span itemprop="name">数据结构</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="Java-Concurrent-hashmap"><a href="#Java-Concurrent-hashmap" class="headerlink" title="Java Concurrent hashmap"></a>Java Concurrent hashmap</h3><ol>
+<li>多个segment，支持最大segment数量的并发访问<blockquote>
+<p>ps: 如果hash桶的list过长，可以使用红黑树代替list</p>
+</blockquote>
+</li>
+</ol>
+<h3 id="golang-sync-Map"><a href="#golang-sync-Map" class="headerlink" title="golang sync.Map"></a>golang sync.Map</h3><ol>
+<li>read-only, dirty 两个字段将读写分离</li>
+<li>read-only不需加锁，读或写dirty都需要加锁</li>
+<li>misses字段，统计read-only穿透次数，超过一定次数将dirty同步到read-only上</li>
+<li>删除时，通过给read-only添加标记，延迟删除</li>
+<li>读的时候，先查询read，不存在时查询dirty；写入时则只写入dirty</li>
+<li>写入过程，每次写入时，先copy 未删除的read-only到dirty中，然后将k-v存入dirty。<blockquote>
+<p>read-only可以当做dirty的缓存。dirty里的数据，总比read-only的多。</p>
+</blockquote>
+</li>
+<li><strong>适用于读多写少的场景。写入较多时，性能无法保证。</strong></li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/05/13/%E5%90%84%E7%A7%8D%E6%A0%91%E7%BB%93%E6%9E%84/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -192,7 +276,7 @@
               </span>
               <span class="post-meta-item-text">In</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">算法</span></a>
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" itemprop="url" rel="index"><span itemprop="name">数据结构</span></a>
                 </span>
             </span>
 
@@ -689,7 +773,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2020/05/11/%E5%BC%80%E5%A4%A9%E8%BE%9F%E5%9C%B0/" class="post-title-link" itemprop="url">开天辟地.md</a>
+            <a href="/2020/05/11/%E5%BC%80%E5%A4%A9%E8%BE%9F%E5%9C%B0/" class="post-title-link" itemprop="url">开天辟地</a>
         </h2>
 
         <div class="post-meta">
@@ -698,10 +782,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
-              
 
-              <time title="Created: 2020-05-11 17:05:19 / Modified: 17:13:22" itemprop="dateCreated datePublished" datetime="2020-05-11T17:05:19+08:00">2020-05-11</time>
+              <time title="Created: 2020-05-11 17:05:19" itemprop="dateCreated datePublished" datetime="2020-05-11T17:05:19+08:00">2020-05-11</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-05-14 11:04:18" itemprop="dateModified" datetime="2020-05-14T11:04:18+08:00">2020-05-14</time>
+              </span>
 
           
 
@@ -796,7 +886,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">5</span>
+          <span class="site-state-item-count">6</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -809,7 +899,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-count">2</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>

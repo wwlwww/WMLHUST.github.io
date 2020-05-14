@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2020-05-13T02:21:07.000Z</updated>
+  <updated>2020-05-14T03:03:32.000Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -15,6 +15,32 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>map并发安全实现原理</title>
+    <link href="http://yoursite.com/2020/05/14/map%E5%B9%B6%E5%8F%91%E5%AE%89%E5%85%A8%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/"/>
+    <id>http://yoursite.com/2020/05/14/map%E5%B9%B6%E5%8F%91%E5%AE%89%E5%85%A8%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/</id>
+    <published>2020-05-14T03:03:32.000Z</published>
+    <updated>2020-05-14T03:03:32.000Z</updated>
+    
+    <content type="html"><![CDATA[<h3 id="Java-Concurrent-hashmap"><a href="#Java-Concurrent-hashmap" class="headerlink" title="Java Concurrent hashmap"></a>Java Concurrent hashmap</h3><ol><li>多个segment，支持最大segment数量的并发访问<blockquote><p>ps: 如果hash桶的list过长，可以使用红黑树代替list</p></blockquote></li></ol><h3 id="golang-sync-Map"><a href="#golang-sync-Map" class="headerlink" title="golang sync.Map"></a>golang sync.Map</h3><ol><li>read-only, dirty 两个字段将读写分离</li><li>read-only不需加锁，读或写dirty都需要加锁</li><li>misses字段，统计read-only穿透次数，超过一定次数将dirty同步到read-only上</li><li>删除时，通过给read-only添加标记，延迟删除</li><li>读的时候，先查询read，不存在时查询dirty；写入时则只写入dirty</li><li>写入过程，每次写入时，先copy 未删除的read-only到dirty中，然后将k-v存入dirty。<blockquote><p>read-only可以当做dirty的缓存。dirty里的数据，总比read-only的多。</p></blockquote></li><li><strong>适用于读多写少的场景。写入较多时，性能无法保证。</strong></li></ol>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h3 id=&quot;Java-Concurrent-hashmap&quot;&gt;&lt;a href=&quot;#Java-Concurrent-hashmap&quot; class=&quot;headerlink&quot; title=&quot;Java Concurrent hashmap&quot;&gt;&lt;/a&gt;Java Concurrent h
+      
+    
+    </summary>
+    
+    
+      <category term="数据结构" scheme="http://yoursite.com/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
+    
+    
+      <category term="数据结构" scheme="http://yoursite.com/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
+    
+  </entry>
   
   <entry>
     <title>各种树结构</title>
@@ -36,10 +62,10 @@
     </summary>
     
     
-      <category term="算法" scheme="http://yoursite.com/categories/%E7%AE%97%E6%B3%95/"/>
+      <category term="数据结构" scheme="http://yoursite.com/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
     
     
-      <category term="算法" scheme="http://yoursite.com/tags/%E7%AE%97%E6%B3%95/"/>
+      <category term="数据结构" scheme="http://yoursite.com/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
     
   </entry>
   
@@ -70,6 +96,8 @@
     
       <category term="方案总结" scheme="http://yoursite.com/categories/%E5%88%86%E5%B8%83%E5%BC%8F/%E6%96%B9%E6%A1%88%E6%80%BB%E7%BB%93/"/>
     
+    
+      <category term="分布式" scheme="http://yoursite.com/tags/%E5%88%86%E5%B8%83%E5%BC%8F/"/>
     
   </entry>
   
@@ -135,11 +163,11 @@
   </entry>
   
   <entry>
-    <title>开天辟地.md</title>
+    <title>开天辟地</title>
     <link href="http://yoursite.com/2020/05/11/%E5%BC%80%E5%A4%A9%E8%BE%9F%E5%9C%B0/"/>
     <id>http://yoursite.com/2020/05/11/%E5%BC%80%E5%A4%A9%E8%BE%9F%E5%9C%B0/</id>
     <published>2020-05-11T09:05:19.000Z</published>
-    <updated>2020-05-11T09:13:22.465Z</updated>
+    <updated>2020-05-14T03:04:18.669Z</updated>
     
     <content type="html"><![CDATA[<p>欢迎</p>]]></content>
     
@@ -154,8 +182,6 @@
     </summary>
     
     
-    
-      <category term="tag1" scheme="http://yoursite.com/tags/tag1/"/>
     
   </entry>
   

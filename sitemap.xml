@@ -2,6 +2,20 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://yoursite.com/2020/05/11/%E5%BC%80%E5%A4%A9%E8%BE%9F%E5%9C%B0/</loc>
+    
+    <lastmod>2020-05-14T03:04:18.669Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://yoursite.com/2020/05/14/map%E5%B9%B6%E5%8F%91%E5%AE%89%E5%85%A8%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/</loc>
+    
+    <lastmod>2020-05-14T03:03:32.000Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://yoursite.com/2020/05/13/%E5%90%84%E7%A7%8D%E6%A0%91%E7%BB%93%E6%9E%84/</loc>
     
     <lastmod>2020-05-13T02:21:07.000Z</lastmod>
@@ -40,13 +54,6 @@
     <loc>http://yoursite.com/categories/index.html</loc>
     
     <lastmod>2020-05-11T09:14:36.963Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://yoursite.com/2020/05/11/%E5%BC%80%E5%A4%A9%E8%BE%9F%E5%9C%B0/</loc>
-    
-    <lastmod>2020-05-11T09:13:22.465Z</lastmod>
     
   </url>
   
