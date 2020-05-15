@@ -54,16 +54,7 @@
     
     <summary type="html">
     
-      
-      
-        &lt;h2 id=&quot;范式与反范式&quot;&gt;&lt;a href=&quot;#范式与反范式&quot; class=&quot;headerlink&quot; title=&quot;范式与反范式&quot;&gt;&lt;/a&gt;范式与反范式&lt;/h2&gt;&lt;table&gt;
-&lt;thead&gt;
-&lt;tr&gt;
-&lt;th&gt;范式&lt;/th&gt;
-&lt;th&gt;描述&lt;/th&gt;
-&lt;th&gt;反例&lt;/th&gt;
-
-      
+      总结一些mysql的知识点，包括范式、索引、事务、锁等等。
     
     </summary>
     
