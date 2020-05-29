@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2020-05-25T08:20:55.000Z</updated>
+  <updated>2020-05-29T04:56:52.000Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -15,6 +15,52 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>PathEscape与QueryEscape</title>
+    <link href="http://yoursite.com/2020/05/29/PathEscape%E4%B8%8EQueryEscape/"/>
+    <id>http://yoursite.com/2020/05/29/PathEscape%E4%B8%8EQueryEscape/</id>
+    <published>2020-05-29T04:56:52.000Z</published>
+    <updated>2020-05-29T04:56:52.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>在给client种cookie时，发现个问题，种进去的加密cookie，解密时总报错。<br>原因是：golang中，对一个字符串做url转义有两个方法，<code>url.PathEscape()</code>和<code>url.QueryEscape</code>。但是两个方法的行为有些区别。两者混用导致，编码和解码后，和原始字符串不一致。</p><h3 id="1-举个例子，直接对比下效果"><a href="#1-举个例子，直接对比下效果" class="headerlink" title="1. 举个例子，直接对比下效果"></a>1. 举个例子，直接对比下效果</h3><p>以 + 和 空格 这两个字符为例。   </p><table><thead><tr><th align="center">待转义字符</th><th align="center">PathEscape</th><th align="center">QueryEscape</th><th align="center">PathUnEscape</th><th align="center">QueryUnEscape</th></tr></thead><tbody><tr><td align="center">+</td><td align="center">+</td><td align="center">%2B</td><td align="center">+</td><td align="center">空格</td></tr><tr><td align="center">空格</td><td align="center">%20</td><td align="center">+</td><td align="center">空格</td><td align="center">空格</td></tr></tbody></table><h3 id="2-具体功能"><a href="#2-具体功能" class="headerlink" title="2. 具体功能"></a>2. 具体功能</h3><h4 id="2-1-PathEscape"><a href="#2-1-PathEscape" class="headerlink" title="2.1 PathEscape"></a>2.1 PathEscape</h4><p>对特殊字符串进行转义，以便其可以作为url路径的一部分。就是URL地址两个 / 之间的部分</p><h4 id="2-2-QueryEscape"><a href="#2-2-QueryEscape" class="headerlink" title="2.2 QueryEscape"></a>2.2 QueryEscape</h4><p>对特殊字符串进行转义，以便其可以作为url query的参数，也就是 ？后面那一串kv。</p><h4 id="2-3-对比"><a href="#2-3-对比" class="headerlink" title="2.3 对比"></a>2.3 对比</h4><ol><li><p>两者的共同点在于：都会将一些特殊字符，转义为<code>%AB</code>的形式。特殊字符的定义为，除<code>a-z，A-Z，0-9，- _ ~ · , / ; ?</code> 的字符。</p></li><li><p>不同点在于：对于一些特殊字符，转义行为不同。</p></li></ol><table><thead><tr><th align="center">字符</th><th align="center">PathEscpae</th><th align="center">QueryEscape</th></tr></thead><tbody><tr><td align="center">$</td><td align="center">Y</td><td align="center">N</td></tr><tr><td align="center">&amp;</td><td align="center">Y</td><td align="center">N</td></tr><tr><td align="center">+</td><td align="center">Y</td><td align="center">N</td></tr><tr><td align="center">:</td><td align="center">Y</td><td align="center">N</td></tr><tr><td align="center">=</td><td align="center">Y</td><td align="center">N</td></tr><tr><td align="center">@</td><td align="center">Y</td><td align="center">N</td></tr></tbody></table><p>具体的可参考RFC文档（URI、URL的两篇）和Golang的源码。（Golang源码更简单直接）</p><h3 id="3-其他"><a href="#3-其他" class="headerlink" title="3. 其他"></a>3. 其他</h3><p>其他语言似乎没分得那么清，具体实现上也有一些区别，比如python/javascript，encode行为就和golang的不一致。总之，同一语言，如golang，QueryEscape编码后，一定要配合QueryUnEscape使用。</p><p>一些细节也不同，比如JS里的encodeURI和encodeURIComponent。可以理解为，encodeURI，是把参数当做一个完整的URI在编码，而encodeURIComponent是把参数当做URI的一个segment。</p><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// JS里</span></span><br><span class="line"><span class="built_in">encodeURI</span>(<span class="string">"12+34 56"</span>)</span><br><span class="line">output: <span class="string">"12+34%2056"</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">encodeURIComponent</span>(<span class="string">"12+34 56"</span>)</span><br><span class="line">output: <span class="string">"12%2B34%2056"</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> a = <span class="string">"http://www.ruanyifeng.com/blog/2010/02/url_encoding.html"</span></span><br><span class="line"><span class="built_in">encodeURI</span>(a)</span><br><span class="line">output: <span class="string">"http://www.ruanyifeng.com/blog/2010/02/url_encoding.html"</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">encodeURIComponent</span>(a)</span><br><span class="line">output: <span class="string">"http%3A%2F%2Fwww.ruanyifeng.com%2Fblog%2F2010%2F02%2Furl_encoding.html"</span></span><br></pre></td></tr></table></figure><h3 id="参考："><a href="#参考：" class="headerlink" title="参考："></a>参考：</h3><ol><li><a href="http://www.ruanyifeng.com/blog/2010/02/url_encoding.html" target="_blank" rel="noopener">http://www.ruanyifeng.com/blog/2010/02/url_encoding.html</a></li><li><a href="https://tools.ietf.org/html/rfc1738" target="_blank" rel="noopener">https://tools.ietf.org/html/rfc1738</a></li><li><a href="https://tools.ietf.org/html/rfc3986" target="_blank" rel="noopener">https://tools.ietf.org/html/rfc3986</a></li></ol>]]></content>
+    
+    <summary type="html">
+    
+      搞懂PathEscape与QeuryEscape区别
+    
+    </summary>
+    
+    
+    
+  </entry>
+  
+  <entry>
+    <title>关于工作的一些想法.md</title>
+    <link href="http://yoursite.com/2020/05/28/%E5%85%B3%E4%BA%8E%E5%B7%A5%E4%BD%9C%E7%9A%84%E4%B8%80%E4%BA%9B%E6%83%B3%E6%B3%95/"/>
+    <id>http://yoursite.com/2020/05/28/%E5%85%B3%E4%BA%8E%E5%B7%A5%E4%BD%9C%E7%9A%84%E4%B8%80%E4%BA%9B%E6%83%B3%E6%B3%95/</id>
+    <published>2020-05-28T06:36:40.000Z</published>
+    <updated>2020-05-28T06:36:40.000Z</updated>
+    
+    <content type="html"><![CDATA[<!-- 0. 工作的目的1. 浮于表面，不用思考2. 重复性，还是不用思考 -->]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;!-- 0. 工作的目的
+
+1. 浮于表面，不用思考
+
+2. 重复性，还是不用思考 --&gt;
+
+      
+    
+    </summary>
+    
+    
+    
+  </entry>
   
   <entry>
     <title>常见web安全总结</title>
