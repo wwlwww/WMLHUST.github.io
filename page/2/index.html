@@ -172,6 +172,431 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/05/14/map%E5%B9%B6%E5%8F%91%E5%AE%89%E5%85%A8%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.png">
+      <meta itemprop="name" content="WordGe">
+      <meta itemprop="description" content="厉害了~">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="小本本">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/05/14/map%E5%B9%B6%E5%8F%91%E5%AE%89%E5%85%A8%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/" class="post-title-link" itemprop="url">Map并发安全实现原理</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-05-14 11:03:32" itemprop="dateCreated datePublished" datetime="2020-05-14T11:03:32+08:00">2020-05-14</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" itemprop="url" rel="index"><span itemprop="name">数据结构</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="Java-Concurrent-hashmap"><a href="#Java-Concurrent-hashmap" class="headerlink" title="Java Concurrent hashmap"></a>Java Concurrent hashmap</h3><ol>
+<li>多个segment，支持最大segment数量的并发访问<blockquote>
+<p>ps: 如果hash桶的list过长，可以使用红黑树代替list</p>
+</blockquote>
+</li>
+</ol>
+<h3 id="golang-sync-Map"><a href="#golang-sync-Map" class="headerlink" title="golang sync.Map"></a>golang sync.Map</h3><ol>
+<li>read-only, dirty 两个字段将读写分离</li>
+<li>read-only不需加锁，读或写dirty都需要加锁</li>
+<li>misses字段，统计read-only穿透次数，超过一定次数将dirty同步到read-only上</li>
+<li>删除时，通过给read-only添加标记，延迟删除</li>
+<li>读的时候，先查询read，不存在时查询dirty；写入时则只写入dirty</li>
+<li>写入过程，每次写入时，先copy 未删除的read-only到dirty中，然后将k-v存入dirty。<blockquote>
+<p>read-only可以当做dirty的缓存。dirty里的数据，总比read-only的多。</p>
+</blockquote>
+</li>
+<li><strong>适用于读多写少的场景。写入较多时，性能无法保证。</strong></li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/05/13/%E5%90%84%E7%A7%8D%E6%A0%91%E7%BB%93%E6%9E%84/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.png">
+      <meta itemprop="name" content="WordGe">
+      <meta itemprop="description" content="厉害了~">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="小本本">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/05/13/%E5%90%84%E7%A7%8D%E6%A0%91%E7%BB%93%E6%9E%84/" class="post-title-link" itemprop="url">各种树结构</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-05-13 10:21:07" itemprop="dateCreated datePublished" datetime="2020-05-13T10:21:07+08:00">2020-05-13</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" itemprop="url" rel="index"><span itemprop="name">数据结构</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="B树-vs-B-树-vs-B-树"><a href="#B树-vs-B-树-vs-B-树" class="headerlink" title="B树 vs B+树 vs B*树"></a>B树 vs B+树 vs B*树</h3><ol>
+<li><p>B树，B是指发明人的名字</p>
+<ul>
+<li>平衡多路搜索树</li>
+<li>保持键值有序，以顺序遍历</li>
+<li>使用不完全填充的节点块，来加速插入和删除</li>
+<li>节点块至少半满，提升空间利用率</li>
+</ul>
+</li>
+<li><p>B+树 VS B树</p>
+<ul>
+<li>非叶子节点，只保存索引：从而可以减少索引树的大小，内存里可以保存更多的索引。由于每次都需要走到叶子节点，查询时间也更稳定。</li>
+<li>叶子节点之间，增加链指针，方便遍历</li>
+</ul>
+</li>
+<li><p>B*树<br>在B+树的基础上</p>
+<ul>
+<li>非根和非叶子节点，增加指向兄弟的指针</li>
+<li>插入时，如果节点已满，会检查兄弟节点是否满，未满，则向兄弟节点转移数据；已满，则从当前节点和兄弟节点，各拿出1/3数据，创建一个新节点。<br>从而节点空间利用率更高，节点分裂的情况也减少。</li>
+</ul>
+</li>
+</ol>
+<h3 id="红黑树"><a href="#红黑树" class="headerlink" title="红黑树"></a>红黑树</h3><ol>
+<li>也是一种BST(二叉搜索树)，但是不要求完全平衡</li>
+<li>牺牲部分平衡性，达到较快的插入和删除性能</li>
+<li>使用场景：linux CFS调度，nginx timer等</li>
+<li>vs B树: B树作为多路搜索，能够在树深较小的情况下，支持更多的数据节点。对于磁盘类操作，可以避免大量的随机IO（一个磁盘page，可以读取到更多的索引，类似MySQL），从而优化读写性能。而红黑树一般整棵树都在内存里，不涉及到磁盘操作，支持的数据量较小，但是由于各种操作优于BST，因此常用于涉及到排序、搜索的场景。比如CFS，为了保证公平调度，每次选取当前执行总时间最小的线程执行。</li>
+</ol>
+<h3 id="LSM，Log-Structured-Merged-Tree"><a href="#LSM，Log-Structured-Merged-Tree" class="headerlink" title="LSM，Log-Structured Merged Tree"></a>LSM，Log-Structured Merged Tree</h3><ol>
+<li>核心思想：<strong>放弃部分读性能，提高写性能。</strong>适用于kv存储</li>
+<li>应用：rocksDB，levelDB，hbase<ul>
+<li>rocksDB：c++编写的kv存储引擎</li>
+<li>levelDB：kv存储引擎</li>
+<li>hbase: 分布式存储，列数据库，应对大量数据（亿级以上）</li>
+</ul>
+</li>
+<li>内存中的memtable，磁盘上的sstable。读取的时候，需要遍历sstable，这里的 优化是，使用是bloom filter，确定一个Key是否在sstable里。</li>
+<li>一般LSM-Trees会配合内存排序，内存里将写数据缓冲（通常是一个(Red-Black Tree)红黑树结构）。等积累得足够多之后，使用归并排序将数据合并，写入磁盘。由于。</li>
+<li>参考资料<ul>
+<li><a href="http://blog.fatedier.com/2016/06/15/learn-lsm-tree/" target="_blank" rel="noopener">http://blog.fatedier.com/2016/06/15/learn-lsm-tree/</a></li>
+</ul>
+</li>
+</ol>
+<h3 id="lsm-vs-b-树"><a href="#lsm-vs-b-树" class="headerlink" title="lsm vs b+树"></a>lsm vs b+树</h3><ol>
+<li><p>查询过程<br>为了快速查询，一个办法是建立hash索引，但是hash索引占用空间太大，而且不支持区间查询。另一个办法是，事先对数据进行排序，B+树，把排序的操作放在了写入的时候，读的时候便轻松一些。   </p>
+</li>
+<li><p>写过程<br> 但是B树面对高并发写的时候，压力很大。B树把所有的压力都放到了写操作的时候，从根节点索引到数据存储的位置，可能需要多次读文件；真正插入的时候，又可能会引起page的分裂，多次写文件。   </p>
+<p> LSM在写的时候，直接写入内存，然后利用红黑树保持内存中的数据有序，由后台线程定期或被触发，去merge和持久化到磁盘。也会使用WAL方式记录log，避免数据丢失。  </p>
+<p> 当写比读多时，LSM树相比于B树有更好的性能。因为随着insert操作，为了维护B树结构，节点分裂。读磁盘的随机读写概率会变大，性能会逐渐减弱。LSM把多次IO，批量变成一次IO，复用了磁盘寻道时间，极大提升效率。</p>
+</li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/05/12/%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.png">
+      <meta itemprop="name" content="WordGe">
+      <meta itemprop="description" content="厉害了~">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="小本本">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/05/12/%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/" class="post-title-link" itemprop="url">分布式锁</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-05-12 21:35:11" itemprop="dateCreated datePublished" datetime="2020-05-12T21:35:11+08:00">2020-05-12</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">分布式</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F/%E6%96%B9%E6%A1%88%E6%80%BB%E7%BB%93/" itemprop="url" rel="index"><span itemprop="name">方案总结</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="redis"><a href="#redis" class="headerlink" title="redis"></a>redis</h3><ol>
+<li>set key val nx ex</li>
+</ol>
+<ul>
+<li>优点：实现简单，性能好</li>
+<li>缺点：超时时间不好控制，极端情况，会出现超时后，多个节点获取到同一把锁的情况。</li>
+</ul>
+<ol start="2">
+<li>问题<ol>
+<li>主从，redis主从采用异步复制，那么如果主机宕机，切换到从，会导致部分锁数据丢失。此时，多个client会拿到同一把锁。</li>
+<li>如果锁没有设置超时，若client挂掉，则锁永远不会释放</li>
+<li>如果锁设置了超时，若client阻塞或业务执行超时，也会导致多个client拿到同一把锁。</li>
+</ol>
+</li>
+</ol>
+<h3 id="zookeeper"><a href="#zookeeper" class="headerlink" title="zookeeper"></a>zookeeper</h3><ol>
+<li>使用临时顺序节点，如果自己是子节点的第一个，则表示加锁成功。否则，watch上一个，如果上一个释放，表示轮到自己了。</li>
+</ol>
+<ul>
+<li>优点：一般情况，不存在client宕机/超时问题，zk感知到client宕机，会自动删除对应的临时顺序节点，相当于自动释放锁，或者取消自己的排队。</li>
+<li>缺点：实现复杂，吞吐量不高</li>
+</ul>
+<ol start="2">
+<li>问题<ol>
+<li>因为zk使用心跳判断client是否在线，如果网络超时或者full GC等等，导致zk认为client宕机，则会释放锁。导致其他client同时获得该锁。<strong>但是这种情况很少见，相比之下，client处理超时这种更常见，这也是zk比redis方案好的原因。</strong></li>
+</ol>
+</li>
+</ol>
+<h3 id="mysql行锁"><a href="#mysql行锁" class="headerlink" title="mysql行锁"></a>mysql行锁</h3><ul>
+<li>优点：不需引入额外中间件</li>
+<li>缺点：吞吐量不高；也存在client宕机超时问题</li>
+</ul>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><ol>
+<li>探测client是否宕机很难，如果因为超时，那就不应该释放锁。如果是因为宕机，那就应该释放锁。</li>
+<li><code>没有完美的方案，实际场景中，分布式锁只应作为辅助手段，比如为了减少DB的压力等，不应仅靠它控制业务并发逻辑。</code></li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/05/12/%E9%AB%98%E5%B9%B6%E5%8F%91/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.png">
+      <meta itemprop="name" content="WordGe">
+      <meta itemprop="description" content="厉害了~">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="小本本">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/05/12/%E9%AB%98%E5%B9%B6%E5%8F%91/" class="post-title-link" itemprop="url">高并发常见方案</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-05-12 21:29:38" itemprop="dateCreated datePublished" datetime="2020-05-12T21:29:38+08:00">2020-05-12</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">分布式</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F/%E6%96%B9%E6%A1%88%E6%80%BB%E7%BB%93/" itemprop="url" rel="index"><span itemprop="name">方案总结</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="高并发写"><a href="#高并发写" class="headerlink" title="高并发写"></a>高并发写</h3><ol>
+<li>数据分片<ul>
+<li>数据库分库分表</li>
+<li>JDK concurrentHashMap实现</li>
+<li>kafka的partition</li>
+<li>ES的分布式索引</li>
+</ul>
+</li>
+<li>任务分片<ul>
+<li>CPU的指令流水线</li>
+<li>Map/Reduce</li>
+<li>Tomcat 1+N+M 网络模型：1个监听线程，N个IO线程负责对socket进行读写，M个worker对请求做逻辑处理。</li>
+</ul>
+</li>
+<li>异步化：异步接口、异步IO<ul>
+<li>短信验证码注册/登录</li>
+<li>订单系统</li>
+<li>广告计费系统，异步，多消息合并扣费</li>
+<li>Kafka的Pipeline</li>
+</ul>
+</li>
+<li>WAL技术<ul>
+<li>数据库redo log</li>
+<li>LSM树 </li>
+</ul>
+</li>
+<li>批量<ul>
+<li>kafka的百万qps写入:partition分片，磁盘顺序写入，批量（leader/follower之间的批量，本地client之间的批量）</li>
+<li>mysql的group commit机制，对多事务的redo log批量flush</li>
+</ul>
+</li>
+</ol>
+<h3 id="高并发读"><a href="#高并发读" class="headerlink" title="高并发读"></a>高并发读</h3><ol>
+<li>加缓存<ul>
+<li>本地缓存/redis/memcached</li>
+</ul>
+</li>
+<li>增加副本冗余<ul>
+<li>MySQL master/slave</li>
+<li>CDN 静态文件加速</li>
+</ul>
+</li>
+<li>并发读<ul>
+<li>异步RPC</li>
+<li>冗余请求，降低失败率</li>
+</ul>
+</li>
+</ol>
+<h3 id=""><a href="#" class="headerlink" title=""></a></h3>
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/05/12/%E5%A4%9A%E5%89%AF%E6%9C%AC%E4%B8%80%E8%87%B4%E6%80%A7/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -481,7 +906,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">12</span>
+          <span class="site-state-item-count">16</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -494,7 +919,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-count">6</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
