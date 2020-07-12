@@ -172,6 +172,84 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/05/14/CAP/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.png">
+      <meta itemprop="name" content="WordGe">
+      <meta itemprop="description" content="厉害了~">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="小本本">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/05/14/CAP/" class="post-title-link" itemprop="url">对CAP的正确理解</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-05-14 11:06:27" itemprop="dateCreated datePublished" datetime="2020-05-14T11:06:27+08:00">2020-05-14</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">分布式</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="CAP"><a href="#CAP" class="headerlink" title="CAP"></a>CAP</h3><ol>
+<li>C，一致性，多副本一致性，事务一致性等</li>
+<li>A，可用性</li>
+<li>P，分区容忍性</li>
+</ol>
+<h3 id="理解"><a href="#理解" class="headerlink" title="理解"></a>理解</h3><ol>
+<li>最大的误解：<strong>CAP可以三选二</strong><br>实际上P是必然存在的，只能在C和A（一致性和可用性）之间权衡。实际中大多是AP或CP系统，很少有CA的系统。</li>
+<li>AP系统，追求可用性，放弃一致性。比如MySQL主从等。</li>
+<li>CP系统，追求强一致性，牺牲一定的可用性。raft、zab协议。而此时的一致性，也只是对客户端看来是一致的，对内部看，是最终一致，因为同步数据总需要时间。</li>
+<li>对于CA系统，因为要实现A（高可用），就必然有冗余，有冗余就必然存在P。比如MySQL，内部事务实现强一致性C，但是单机无法保证A，单机也不存在网络延迟，因此可以满足P。</li>
+<li>只要引入冗余，实现的高可用（A），就一定存在P。如果还想兼顾一致性（C），那么一定不是真的A。<strong>因此实际系统中，总是在CA之间做权衡。放弃某一方，就变成了AP或CP。</strong></li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/05/14/map%E5%B9%B6%E5%8F%91%E5%AE%89%E5%85%A8%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -332,16 +410,25 @@
 <li>vs B树: B树作为多路搜索，能够在树深较小的情况下，支持更多的数据节点。对于磁盘类操作，可以避免大量的随机IO（一个磁盘page，可以读取到更多的索引，类似MySQL），从而优化读写性能。而红黑树一般整棵树都在内存里，不涉及到磁盘操作，支持的数据量较小，但是由于各种操作优于BST，因此常用于涉及到排序、搜索的场景。比如CFS，为了保证公平调度，每次选取当前执行总时间最小的线程执行。</li>
 </ol>
 <h3 id="LSM，Log-Structured-Merged-Tree"><a href="#LSM，Log-Structured-Merged-Tree" class="headerlink" title="LSM，Log-Structured Merged Tree"></a>LSM，Log-Structured Merged Tree</h3><ol>
-<li>核心思想：<strong>放弃部分读性能，提高写性能。</strong>适用于kv存储</li>
-<li>应用：rocksDB，levelDB，hbase<ul>
-<li>rocksDB：c++编写的kv存储引擎</li>
-<li>levelDB：kv存储引擎</li>
-<li>hbase: 分布式存储，列数据库，应对大量数据（亿级以上）</li>
+<li><p>核心思想：<strong>放弃部分读性能，提高写性能。</strong> 适用于kv存储。</p>
+</li>
+<li><p>应用：rocksDB，levelDB，hbase</p>
+<ul>
+<li><p>rocksDB：c++编写的kv存储引擎，基于levelDB改造</p>
+</li>
+<li><p>levelDB：kv存储引擎</p>
+</li>
+<li><p>hbase: 分布式存储，列数据库，应对大量数据（亿级以上）   </p>
+<p>这些思想类似levelDB，但也有一些优化和改进，比如levelDB为了避免sstable过多，以及降低sstable合并过程中的开销，增加了level的概念。如果没有level，新sstable需要和旧的sstable比较，随着数据量的增多，新sstable需要和越来越多的sstable合并，从而效率降低。（如果每次合并后只留下一个大的sstable，效率一样会降低，因为涉及到插入操作。）有了level，上下层level，相关的sstable数量将会得到控制。从而加快压缩、合并的过程。</p>
+</li>
 </ul>
 </li>
-<li>内存中的memtable，磁盘上的sstable。读取的时候，需要遍历sstable，这里的 优化是，使用是bloom filter，确定一个Key是否在sstable里。</li>
-<li>一般LSM-Trees会配合内存排序，内存里将写数据缓冲（通常是一个(Red-Black Tree)红黑树结构）。等积累得足够多之后，使用归并排序将数据合并，写入磁盘。由于。</li>
-<li>参考资料<ul>
+<li><p>内存中的memtable，磁盘上的sstable。读取的时候，需要遍历sstable，这里的 优化是，使用是bloom filter，确定一个Key是否在sstable里。</p>
+</li>
+<li><p>一般LSM-Trees会配合内存排序，内存里将写数据缓冲（通常是一个红黑树、跳表之类的结构）。等积累得足够多之后，使用归并排序将数据合并，写入磁盘。</p>
+</li>
+<li><p>参考资料</p>
+<ul>
 <li><a href="http://blog.fatedier.com/2016/06/15/learn-lsm-tree/" target="_blank" rel="noopener">http://blog.fatedier.com/2016/06/15/learn-lsm-tree/</a></li>
 </ul>
 </li>
@@ -538,7 +625,7 @@
 <li>ES的分布式索引</li>
 </ul>
 </li>
-<li>任务分片<ul>
+<li>任务分片（计算）<ul>
 <li>CPU的指令流水线</li>
 <li>Map/Reduce</li>
 <li>Tomcat 1+N+M 网络模型：1个监听线程，N个IO线程负责对socket进行读写，M个worker对请求做逻辑处理。</li>
@@ -552,8 +639,8 @@
 </ul>
 </li>
 <li>WAL技术<ul>
-<li>数据库redo log</li>
-<li>LSM树 </li>
+<li>MySQL innoDB 的 redo log</li>
+<li>LSM树众多应用，levelDB等 </li>
 </ul>
 </li>
 <li>批量<ul>
@@ -628,7 +715,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-06-04 10:33:02" itemprop="dateModified" datetime="2020-06-04T10:33:02+08:00">2020-06-04</time>
+                <time title="Modified: 2020-07-12 16:46:48" itemprop="dateModified" datetime="2020-07-12T16:46:48+08:00">2020-07-12</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -712,7 +799,7 @@
 </li>
 <li>恢复阶段<ol>
 <li>leader同步term给follower</li>
-<li>以leader本地的日志为基准，复制给follower</li>
+<li>以leader本地的日志为基准，复制给follower。这里比较特殊，如果新leader本身有未commit的日志，需要跟新的日志一起提交。避免一些特殊情况下，已commit的日志被覆盖。</li>
 </ol>
 </li>
 <li>安全性保证<ol>
@@ -752,7 +839,7 @@
 </ul>
 <p>那么下一个leader该如何来判定这些日志呢？</p>
 <p>下面分别来看看Raft和ZooKeeper的处理策略：</p>
-<p>Raft：对于之前term的过半或未过半复制的日志采取的是保守的策略，全部判定为未提交，只有当当前term的日志过半了，才会顺便将之前term的日志进行提交</p>
+<p>Raft：对于之前term的过半或未过半复制的日志采取的是保守的策略，全部判定为未提交，只有当当前term的日志过半了，才会顺便将之前term的日志进行提交。</p>
 <p>ZooKeeper：采取激进的策略，对于所有过半还是未过半的日志都判定为提交，都将其应用到状态机中</p>
 <p>Raft的保守策略更多是因为Raft在leader选举完成之后，没有同步更新过程来保持和leader一致（在可以对外服务之前的这一同步过程）。而ZooKeeper是有该过程的</p>
 
@@ -906,7 +993,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">16</span>
+          <span class="site-state-item-count">17</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -919,7 +1006,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-count">7</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>

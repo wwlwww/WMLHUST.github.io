@@ -20,12 +20,12 @@
     var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="高并发写 数据分片 数据库分库分表 JDK concurrentHashMap实现 kafka的partition ES的分布式索引   任务分片 CPU的指令流水线 Map&#x2F;Reduce Tomcat 1+N+M 网络模型：1个监听线程，N个IO线程负责对socket进行读写，M个worker对请求做逻辑处理。   异步化：异步接口、异步IO 短信验证码注册&#x2F;登录 订单系统 广告计费系统，异步，">
+  <meta name="description" content="高并发写 数据分片 数据库分库分表 JDK concurrentHashMap实现 kafka的partition ES的分布式索引   任务分片（计算） CPU的指令流水线 Map&#x2F;Reduce Tomcat 1+N+M 网络模型：1个监听线程，N个IO线程负责对socket进行读写，M个worker对请求做逻辑处理。   异步化：异步接口、异步IO 短信验证码注册&#x2F;登录 订单系统 广告计费系统">
 <meta property="og:type" content="article">
 <meta property="og:title" content="高并发常见方案">
 <meta property="og:url" content="http://yoursite.com/2020/05/12/%E9%AB%98%E5%B9%B6%E5%8F%91/index.html">
 <meta property="og:site_name" content="小本本">
-<meta property="og:description" content="高并发写 数据分片 数据库分库分表 JDK concurrentHashMap实现 kafka的partition ES的分布式索引   任务分片 CPU的指令流水线 Map&#x2F;Reduce Tomcat 1+N+M 网络模型：1个监听线程，N个IO线程负责对socket进行读写，M个worker对请求做逻辑处理。   异步化：异步接口、异步IO 短信验证码注册&#x2F;登录 订单系统 广告计费系统，异步，">
+<meta property="og:description" content="高并发写 数据分片 数据库分库分表 JDK concurrentHashMap实现 kafka的partition ES的分布式索引   任务分片（计算） CPU的指令流水线 Map&#x2F;Reduce Tomcat 1+N+M 网络模型：1个监听线程，N个IO线程负责对socket进行读写，M个worker对请求做逻辑处理。   异步化：异步接口、异步IO 短信验证码注册&#x2F;登录 订单系统 广告计费系统">
 <meta property="article:published_time" content="2020-05-12T13:29:38.000Z">
 <meta property="article:modified_time" content="2020-05-12T13:29:38.000Z">
 <meta property="article:author" content="WordGe">
@@ -234,7 +234,7 @@
 <li>ES的分布式索引</li>
 </ul>
 </li>
-<li>任务分片<ul>
+<li>任务分片（计算）<ul>
 <li>CPU的指令流水线</li>
 <li>Map/Reduce</li>
 <li>Tomcat 1+N+M 网络模型：1个监听线程，N个IO线程负责对socket进行读写，M个worker对请求做逻辑处理。</li>
@@ -248,8 +248,8 @@
 </ul>
 </li>
 <li>WAL技术<ul>
-<li>数据库redo log</li>
-<li>LSM树 </li>
+<li>MySQL innoDB 的 redo log</li>
+<li>LSM树众多应用，levelDB等 </li>
 </ul>
 </li>
 <li>批量<ul>
@@ -378,7 +378,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">16</span>
+          <span class="site-state-item-count">17</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -391,7 +391,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-count">7</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>

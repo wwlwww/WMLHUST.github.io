@@ -27,7 +27,7 @@
 <meta property="og:site_name" content="小本本">
 <meta property="og:description" content="同步本质每台机器都把收到的请求按日志存下来，各机器的日志文件保持一致。选择存储“事件流”，而非最终状态，原因是：  日志只有一种操作，append，相对简单  Paxos算法1. Basic Paxos 两个角色，Proposer 和 Acceptor，以及一个自增ID（n） 两个阶段，Propose阶段 和 Accept 阶段 Propose阶段 proposer广播消息，id为n，prepar">
 <meta property="article:published_time" content="2020-05-12T03:23:33.000Z">
-<meta property="article:modified_time" content="2020-06-04T02:33:02.654Z">
+<meta property="article:modified_time" content="2020-07-12T08:46:48.033Z">
 <meta property="article:author" content="WordGe">
 <meta property="article:tag" content="分布式">
 <meta name="twitter:card" content="summary">
@@ -206,7 +206,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-06-04 10:33:02" itemprop="dateModified" datetime="2020-06-04T10:33:02+08:00">2020-06-04</time>
+                <time title="Modified: 2020-07-12 16:46:48" itemprop="dateModified" datetime="2020-07-12T16:46:48+08:00">2020-07-12</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -290,7 +290,7 @@
 </li>
 <li>恢复阶段<ol>
 <li>leader同步term给follower</li>
-<li>以leader本地的日志为基准，复制给follower</li>
+<li>以leader本地的日志为基准，复制给follower。这里比较特殊，如果新leader本身有未commit的日志，需要跟新的日志一起提交。避免一些特殊情况下，已commit的日志被覆盖。</li>
 </ol>
 </li>
 <li>安全性保证<ol>
@@ -330,7 +330,7 @@
 </ul>
 <p>那么下一个leader该如何来判定这些日志呢？</p>
 <p>下面分别来看看Raft和ZooKeeper的处理策略：</p>
-<p>Raft：对于之前term的过半或未过半复制的日志采取的是保守的策略，全部判定为未提交，只有当当前term的日志过半了，才会顺便将之前term的日志进行提交</p>
+<p>Raft：对于之前term的过半或未过半复制的日志采取的是保守的策略，全部判定为未提交，只有当当前term的日志过半了，才会顺便将之前term的日志进行提交。</p>
 <p>ZooKeeper：采取激进的策略，对于所有过半还是未过半的日志都判定为提交，都将其应用到状态机中</p>
 <p>Raft的保守策略更多是因为Raft在leader选举完成之后，没有同步更新过程来保持和leader一致（在可以对外服务之前的这一同步过程）。而ZooKeeper是有该过程的</p>
 
@@ -437,7 +437,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">16</span>
+          <span class="site-state-item-count">17</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -450,7 +450,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-count">7</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>

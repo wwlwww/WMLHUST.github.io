@@ -172,6 +172,73 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/07/12/python%E5%A4%9A%E5%85%83%E8%B5%8B%E5%80%BC%E7%9A%84%E4%B8%80%E4%B8%AA%E5%9D%91/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.png">
+      <meta itemprop="name" content="WordGe">
+      <meta itemprop="description" content="厉害了~">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="小本本">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/07/12/python%E5%A4%9A%E5%85%83%E8%B5%8B%E5%80%BC%E7%9A%84%E4%B8%80%E4%B8%AA%E5%9D%91/" class="post-title-link" itemprop="url">python多元赋值的一个顺序问题</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-07-12 18:50:22" itemprop="dateCreated datePublished" datetime="2020-07-12T18:50:22+08:00">2020-07-12</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>起因是试验一个python翻转链表的代码，python的变量交换非常方便，比如交换两个元素，可以直接<code>a, b = b, a</code>，因此翻转链表，可以这么写：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">reverseList</span><span class="params">(head: ListNode)</span> :</span></span><br><span class="line">    pre = <span class="literal">None</span></span><br><span class="line">    cur = head</span><br><span class="line">    <span class="keyword">while</span> cur <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">        cur, pre, cur.next = cur.next, cur, pre</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> pre</span><br></pre></td></tr></table></figure>
+<p>然而，这个代码是错误的。</p>
+<p>经过单步debug，发现在第一次交换发生时，交换的结果就不对。<br>不用怀疑，如果是 <code>a, b, c = b, c, a</code>，那肯定是对的。所以问题出在哪里？不会是python的一个bug吧？<br>深入其中，追根溯源，直接看下字节码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> dis</span><br><span class="line"></span><br><span class="line"><span class="comment"># 初始化链表</span></span><br><span class="line">n0 = ListNode(<span class="number">0</span>)</span><br><span class="line">n1 = ListNode(<span class="number">1</span>)</span><br><span class="line">n2 = ListNode(<span class="number">2</span>)</span><br><span class="line">n3 = ListNode(<span class="number">3</span>)</span><br><span class="line">n0.next = n1</span><br><span class="line">n1.next = n2</span><br><span class="line">n2.next = n3</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看交换代码的字节码</span></span><br><span class="line">pre = <span class="literal">None</span></span><br><span class="line">cur = n0</span><br><span class="line">dis.dis(<span class="string">"cur, pre, cur.next = cur.next, cur, pre"</span>)</span><br></pre></td></tr></table></figure>
+<p>输出是   </p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 0-10步，先依次取右值 cur.next, cur, pre，然后倒序</span></span><br><span class="line"> <span class="number">0</span> LOAD_NAME     <span class="number">0</span> (cur)   <span class="comment"># 取cur值，push入栈</span></span><br><span class="line"> <span class="number">2</span> LOAD_ATTR     <span class="number">1</span> (next)  <span class="comment"># 取cur.next，替换栈顶</span></span><br><span class="line"> <span class="number">4</span> LOAD_NAME     <span class="number">0</span> (cur)   <span class="comment"># 取cur值，push入栈</span></span><br><span class="line"> <span class="number">6</span> LOAD_NAME     <span class="number">2</span> (pre)   <span class="comment"># 取pre值，push入栈</span></span><br><span class="line"> <span class="number">8</span> ROT_THREE</span><br><span class="line"><span class="number">10</span> ROT_TWO                 <span class="comment"># ROT_3和ROT_2两步的效果，就是对栈内的3个元素倒序</span></span><br><span class="line">                           <span class="comment"># 目前栈内从顶至底分别为[old_cur_next, old_cur, old_pre]</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 依次赋值左边变量，cur, pre, cur.next</span></span><br><span class="line"><span class="number">12</span> STORE_NAME    <span class="number">0</span> (cur)   <span class="comment"># pop栈顶，赋值给 cur (new_cur = old_cur_next)</span></span><br><span class="line">                           <span class="comment"># 此时栈 [old_cur, old_pre]</span></span><br><span class="line"></span><br><span class="line"><span class="number">14</span> STORE_NAME    <span class="number">2</span> (pre)   <span class="comment"># pop栈顶，赋值给 pre (new_pre = old_cur)</span></span><br><span class="line">                           <span class="comment"># 此时栈 [old_pre]</span></span><br><span class="line"></span><br><span class="line"><span class="number">16</span> LOAD_NAME     <span class="number">0</span> (cur)   <span class="comment"># 取cur值，push入栈</span></span><br><span class="line">                           <span class="comment"># 此时栈 [new_cur, old_pre]</span></span><br><span class="line"></span><br><span class="line"><span class="number">18</span> STORE_ATTR    <span class="number">1</span> (next)  <span class="comment"># 将栈顶元素(也就是cur)的next属性，赋值为栈的第二个元素</span></span><br><span class="line">                           <span class="comment"># new_cur.next = old_pre</span></span><br></pre></td></tr></table></figure>
+<p>关键在于第16步，重新load了一下cur，而此时cur已经在第12步，被赋值为old_cur_next。实际执行的是<code>new_cur.next = old_pre</code>，而我们的目标是<code>old_cur.next = old_pre</code>。因此出现了不一致。</p>
+<p>关键在于 <strong>多元赋值中，左边被赋值的变量是有先后关系的。先改变了cur，那么再给cur.next赋值时，cur就已经是新的cur。因此如果同时需要改变cur、cur.next的值，应该优先赋值cur.next。</strong></p>
+<p>修改后的代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">reverseList</span><span class="params">(head: ListNode)</span> :</span></span><br><span class="line">    pre = <span class="literal">None</span></span><br><span class="line">    cur = head</span><br><span class="line">    <span class="keyword">while</span> cur <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">        <span class="comment"># cur, pre, cur.next = cur.next, cur, pre</span></span><br><span class="line">        cur.next, pre, cur  = pre, cur, cur.next</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> pre</span><br></pre></td></tr></table></figure>
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/25/%E5%89%91%E6%8C%87offer%E9%A2%98%E7%9B%AE%E6%80%9D%E8%B7%AF%E7%AE%80%E7%BB%93%EF%BC%88%E4%B8%89%EF%BC%89/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -785,84 +852,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/05/14/CAP/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/avatar.png">
-      <meta itemprop="name" content="WordGe">
-      <meta itemprop="description" content="厉害了~">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="小本本">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/05/14/CAP/" class="post-title-link" itemprop="url">对CAP的正确理解</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2020-05-14 11:06:27" itemprop="dateCreated datePublished" datetime="2020-05-14T11:06:27+08:00">2020-05-14</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">分布式</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="CAP"><a href="#CAP" class="headerlink" title="CAP"></a>CAP</h3><ol>
-<li>C，一致性，多副本一致性，事务一致性等</li>
-<li>A，可用性</li>
-<li>P，分区容忍性</li>
-</ol>
-<h3 id="理解"><a href="#理解" class="headerlink" title="理解"></a>理解</h3><ol>
-<li>最大的误解：<strong>CAP可以三选二</strong><br>实际上P是必然存在的，只能在C和A（一致性和可用性）之间权衡。实际中大多是AP或CP系统，很少有CA的系统。</li>
-<li>AP系统，追求可用性，放弃一致性。比如MySQL主从等。</li>
-<li>CP系统，追求强一致性，牺牲一定的可用性。raft、zab协议。而此时的一致性，也只是对客户端看来是一致的，对内部看，是最终一致，因为同步数据总需要时间。</li>
-<li>对于CA系统，因为要实现A（高可用），就必然有冗余，有冗余就必然存在P。比如MySQL，内部事务实现强一致性C，但是没有A，单机也不存在P。</li>
-<li>只要引入冗余，实现的高可用（A），就一定存在P。如果还想兼顾一致性（C），那么一定不是真的A。<strong>因此实际系统中，总是在CA之间做权衡。放弃某一方，就变成了AP或CP。</strong></li>
-</ol>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -934,7 +923,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">16</span>
+          <span class="site-state-item-count">17</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -947,7 +936,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-count">7</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
