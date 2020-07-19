@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="信号简介 每种信号类型都对应某种系统事件。底层的硬件异常是由内核异常处理程序处理的，正常情况下，堆用户进程而言是不可见的。信号提供了一种机制，统治用户进程发生了这些异常。当一个子进程终止或者停止时，内核会发送一个SIGCHLD信号给父进程。 发送信号 内核更新目的进程上下文中的某个状态，来给目的进程发送信号。一个进程可以给它自己发信号。向进程发信号都是基于进程组（process group）的概念">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CSAPP-8.3-异常控制流3">
+<meta property="og:url" content="http://yoursite.com/2016/11/28/CSAPP-8-3-%E5%BC%82%E5%B8%B8%E6%8E%A7%E5%88%B6%E6%B5%813/index.html">
+<meta property="og:site_name" content="小本本">
+<meta property="og:description" content="信号简介 每种信号类型都对应某种系统事件。底层的硬件异常是由内核异常处理程序处理的，正常情况下，堆用户进程而言是不可见的。信号提供了一种机制，统治用户进程发生了这些异常。当一个子进程终止或者停止时，内核会发送一个SIGCHLD信号给父进程。 发送信号 内核更新目的进程上下文中的某个状态，来给目的进程发送信号。一个进程可以给它自己发信号。向进程发信号都是基于进程组（process group）的概念">
+<meta property="og:image" content="http://yoursite.com/images/csapp-8.3-1.jpeg">
+<meta property="article:published_time" content="2016-11-28T02:57:58.000Z">
+<meta property="article:modified_time" content="2016-11-28T02:57:58.000Z">
+<meta property="article:author" content="WordGe">
+<meta property="article:tag" content="CSAPP">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yoursite.com/images/csapp-8.3-1.jpeg">
+
+<link rel="canonical" href="http://yoursite.com/2016/11/28/CSAPP-8-3-%E5%BC%82%E5%B8%B8%E6%8E%A7%E5%88%B6%E6%B5%813/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-Hans'
+  };
+</script>
+
+  <title>CSAPP-8.3-异常控制流3 | 小本本</title>
+  
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?048408dcae04570297e1804bd477cac3";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="小本本" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">小本本</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">学而时习之，不亦说乎</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/11/28/CSAPP-8-3-%E5%BC%82%E5%B8%B8%E6%8E%A7%E5%88%B6%E6%B5%813/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.png">
+      <meta itemprop="name" content="WordGe">
+      <meta itemprop="description" content="厉害了~">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="小本本">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          CSAPP-8.3-异常控制流3
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2016-11-28 10:57:58" itemprop="dateCreated datePublished" datetime="2016-11-28T10:57:58+08:00">2016-11-28</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">系统原理</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86/CSAPP/" itemprop="url" rel="index"><span itemprop="name">CSAPP</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="信号"><a href="#信号" class="headerlink" title="信号"></a>信号</h2><h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><p><img src="/images/csapp-8.3-1.jpeg" alt="这里写图片描述"></p>
+<p>每种信号类型都对应某种系统事件。底层的硬件异常是由内核异常处理程序处理的，正常情况下，堆用户进程而言是不可见的。信号提供了一种机制，统治用户进程发生了这些异常。当一个子进程终止或者停止时，内核会发送一个SIGCHLD信号给父进程。</p>
+<h3 id="发送信号"><a href="#发送信号" class="headerlink" title="发送信号"></a>发送信号</h3><ol>
+<li><p>内核更新目的进程上下文中的某个状态，来给目的进程发送信号。一个进程可以给它自己发信号。向进程发信号都是基于进程组（process group）的概念。</p>
+</li>
+<li><p>进程组。每个进程都只属于一个进程组，进程组由一个正整数<strong>进程组ID, pgid</strong>标识。shell也为每个作业（job）都创建一个独立的进程组，pgid是新进程的pid。如果这个新进程再继续创建子进程，默认地，一个子进程和它的父进程同属于一个进程组。一个进程可以通过函数改变自己活其他进程的进程组。（权限？）</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">pid_t</span> <span class="title">getpgrp</span><span class="params">(<span class="keyword">void</span>)</span></span>;   <span class="comment">//返回调用进程的进程组ID</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">setpgid</span><span class="params">(<span class="keyword">pid_t</span> pid, <span class="keyword">pit_t</span> pgid)</span></span>;    <span class="comment">//设置一个进程的进程组id，成功返回0，失败-1.</span></span><br></pre></td></tr></table></figure></li>
+<li><p>kill命令可以给其他进程发送任意的信号。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">kill -9 1234          //给进程1234发送信号9（SIGKILL）</span><br><span class="line">kill -9 -1234         //负的pid，表示给1234这个进程组，的每个进程发信号9</span><br><span class="line">kill -9 0             //0，给当前进程所在进程组，的每个进程发信号9</span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/types.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;signal.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* 进程可以调用kill函数发送信号，包括给他们自己 */</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">kill</span><span class="params">(<span class="keyword">pid_t</span> pid, <span class="keyword">int</span> sig)</span></span>;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* 调用alarm函数可以给它自己发送SIGALRM信号 */</span></span><br><span class="line"><span class="function"><span class="keyword">unsigned</span> <span class="keyword">int</span> <span class="title">alarm</span><span class="params">(<span class="keyword">unsigned</span> <span class="keyword">int</span> sig)</span></span>;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<h3 id="接收信号"><a href="#接收信号" class="headerlink" title="接收信号"></a>接收信号</h3><ol>
+<li><p>接收信号。内核为每个进程在pending位向量维护着待处理信号的集合，而在blocked位向量中维护着被阻塞的信号集合。所以在任何时刻一种类型的信号只会被接收一次，在处理它的时候，会先把该类型的信号block。进程可以忽略信号，也可以捕获这个信号，执行信号处理程序。</p>
+</li>
+<li><p>当内核从一个异常处理程序返回（进程调度也属于一种异常？定时器中断？），准备把控制传递给某个进程p时，它会检查进程p的未被阻塞的待处理信号集合（pending &amp; ~blocked）。如果这个集合不为空，那么内核选择集合中的某个信号k（通常是编号最小的信号，所以Linux信号编号还是特意的呢，编号越小，优先级越高），并进入k的处理程序。</p>
+<p>Ps:在block的时候，来的信号会不会标记到pending里？</p>
+<p>答案：会的。执行信号的处理动作称为信号递达（Delivery），信号从产生到递达之间的状态，称为信号未决（Pending）。进程可以选择阻塞（Block）某个信号。<strong>被阻塞的信号在产生时将保持在未决状态</strong>，直到进程解除对此信号的阻塞，才执行递达的动作。注意，阻塞和忽略是不同的，只要信号被阻塞就不会递达，而忽略是在递达之后可选的一种处理动作。忽略也可以说是信号处理程序的一种。</p>
+</li>
+<li><p>信号的默认处理程序是如下中的一种：</p>
+<ul>
+<li><p>进程终止</p>
+</li>
+<li><p>进程终止并转储存储器（dump core）</p>
+</li>
+<li><p>进程暂停，直到被SIGCONT信号重启</p>
+</li>
+<li><p>进程忽略该信号</p>
+</li>
+</ul>
+</li>
+<li><p>修改信号的默认处理程序（忽略，恢复默认行为，自定义）</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;signal.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">typedef</span> <span class="title">void</span> <span class="params">(*<span class="keyword">sighandler_t</span>)</span><span class="params">(<span class="keyword">int</span>)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">sighandler_t</span> <span class="title">signal</span><span class="params">(<span class="keyword">int</span> signum, <span class="keyword">sighandler_t</span> handler)</span></span>;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>待处理信号被阻塞。Unix信号处理程序通常会阻塞当前处理程序正在处理的类型的信号。比如正在执行SIGINT处理程序时，如果再来一个SIGINT信号，只会在pending里置1（感觉此时应该已经为1了）。</p>
+</li>
+<li><p>系统调用可以被中断。像read、wait和accept这样的系统调用会潜在地阻塞进程一段时间，称为慢速系统调用。在某些操作系统中，若正在执行慢速系统调用的时候收到了信号，当从信号处理程序返回时，原来的慢速系统调用可能不会继续，然而由于被信号中断，系统调用的任务并未完成。Linux系统会自动重启被中断的系统调用。</p>
+</li>
+<li><p>阻塞和取消阻塞信号</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;signal.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* 改变blocked向量的值，若oldset!=null，会用来保存以前blocked向量的值 */</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">sigprocmask</span><span class="params">(<span class="keyword">int</span> how, <span class="keyword">const</span> <span class="keyword">sigset_t</span> *<span class="built_in">set</span>, <span class="keyword">sigset_t</span> *oldset)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* 初始化set为空集 */</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">sigemptyset</span><span class="params">(<span class="keyword">sigset_t</span> *<span class="built_in">set</span>)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* 初始化set全为1，每个信号都填入blocked向量 */</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">sigfillset</span><span class="params">(sigset *<span class="built_in">set</span>)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* 添加、删除signum到set */</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">sigaddset</span><span class="params">(<span class="keyword">sigset_t</span> *<span class="built_in">set</span>, <span class="keyword">int</span> signum)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">sigdelset</span><span class="params">(<span class="keyword">sigset_t</span> *<span class="built_in">set</span>, <span class="keyword">int</span> signum)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* set中对应signum是否置1 */</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">sigismember</span><span class="params">(<span class="keyword">const</span> <span class="keyword">sigset_t</span> *<span class="built_in">set</span>, <span class="keyword">int</span> signum)</span></span>;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<h2 id="非本地跳转"><a href="#非本地跳转" class="headerlink" title="非本地跳转"></a>非本地跳转</h2><p>C语言提供了一种用户级异常控制流形式，称为非本地跳转（nonlocal jump)。它将控制直接从一个函数转移到另一个当前正在执行的函数，而不需要经过正常的调用-返回序列。涉及到的两个函数分别是setjmp和longjmp。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;setjmp.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">setjmp</span><span class="params">(jmp_buf env)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">sigsetjmp</span><span class="params">(sigjmp_buf env, <span class="keyword">int</span> savesigs)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">longjmp</span><span class="params">(jmp_buf env, <span class="keyword">int</span> retval)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">siglongjmp</span><span class="params">(sigjmp_buf env, <span class="keyword">int</span> retval)</span></span>;</span><br></pre></td></tr></table></figure>
+<ol>
+<li><p>setjmp函数在env缓冲区中保存当前的调用环境，以供后面longjmp使用，并返回0，调用环境包括程序计数器、栈指针和通用目的寄存器。</p>
+</li>
+<li><p>longjmp函数从env缓冲区中恢复调用环境，然后从最近一次setjmp的env中恢复，恢复的时候相当于setjmp函数的返回，只是返回值非0（longjmp的第二个参数）。longjmp函数只有调用，没有返回。此外，setjmp函数调用一次，可以返回多次。</p>
+</li>
+<li><p>非本地跳转的一个重要应用是允许从一个深层嵌套的函数调用中立即返回。如果再一个深层嵌套的函数中发现了错误，可以调用longjmp(env, ret)，直接返回到setjmp处，然后根据返回的ret值判断是什么错误，调用什么样的错误处理程序。类似java的try…catch语句。</p>
+</li>
+</ol>
+<h2 id="操作进程的工具"><a href="#操作进程的工具" class="headerlink" title="操作进程的工具"></a>操作进程的工具</h2><ol>
+<li><p>strace: 打印一个正在运行的程序和它的子进程调用的每个系统调用的轨迹。</p>
+</li>
+<li><p>pmap: 显示进程的存储器映射</p>
+</li>
+<li><p>/proc：一个虚拟文件系统，以ASCII文本格式输出大量内核数据结构的内容，用户程序可以读取这些内容。比如 cat /proc/loadavg，观察linux系统上当前的平均负载。</p>
+</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/CSAPP/" rel="tag"># CSAPP</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2016/11/28/CSAPP-8-1-%E5%BC%82%E5%B8%B8%E6%8E%A7%E5%88%B6%E6%B5%811/" rel="prev" title="CSAPP-8.1-异常控制流1">
+      <i class="fa fa-chevron-left"></i> CSAPP-8.1-异常控制流1
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2016/11/28/CSAPP-8-2-%E5%BC%82%E5%B8%B8%E6%8E%A7%E5%88%B6%E6%B5%812/" rel="next" title="CSAPP-8.2-异常控制流2">
+      CSAPP-8.2-异常控制流2 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="lv-container" data-id="city" data-uid="MTAyMC81MDA3NC8yNjU2NQ=="></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#信号"><span class="nav-number">1.</span> <span class="nav-text">信号</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#简介"><span class="nav-number">1.1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#发送信号"><span class="nav-number">1.2.</span> <span class="nav-text">发送信号</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#接收信号"><span class="nav-number">1.3.</span> <span class="nav-text">接收信号</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#非本地跳转"><span class="nav-number">2.</span> <span class="nav-text">非本地跳转</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#操作进程的工具"><span class="nav-number">3.</span> <span class="nav-text">操作进程的工具</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="WordGe"
+      src="/avatar.png">
+  <p class="site-author-name" itemprop="name">WordGe</p>
+  <div class="site-description" itemprop="description">厉害了~</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">24</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">WordGe</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+  <script>
+    (function(){
+      var canonicalURL, curProtocol;
+      //Get the <link> tag
+      var x=document.getElementsByTagName("link");
+		//Find the last canonical URL
+		if(x.length > 0){
+			for (i=0;i<x.length;i++){
+				if(x[i].rel.toLowerCase() == 'canonical' && x[i].href){
+					canonicalURL=x[i].href;
+				}
+			}
+		}
+    //Get protocol
+	    if (!canonicalURL){
+	    	curProtocol = window.location.protocol.split(':')[0];
+	    }
+	    else{
+	    	curProtocol = canonicalURL.split(':')[0];
+	    }
+      //Get current URL if the canonical URL does not exist
+	    if (!canonicalURL) canonicalURL = window.location.href;
+	    //Assign script content. Replace current URL with the canonical URL
+      !function(){var e=/([http|https]:\/\/[a-zA-Z0-9\_\.]+\.baidu\.com)/gi,r=canonicalURL,t=document.referrer;if(!e.test(r)){var n=(String(curProtocol).toLowerCase() === 'https')?"https://sp0.baidu.com/9_Q4simg2RQJ8t7jm9iCKT-xh_/s.gif":"//api.share.baidu.com/s.gif";t?(n+="?r="+encodeURIComponent(document.referrer),r&&(n+="&l="+r)):r&&(n+="?l="+r);var i=new Image;i.src=n}}(window);})();
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script>
+NexT.utils.loadComments(document.querySelector('#lv-container'), () => {
+  window.livereOptions = {
+    refer: location.pathname.replace(CONFIG.root, '').replace('index.html', '')
+  };
+  (function(d, s) {
+    var j, e = d.getElementsByTagName(s)[0];
+    if (typeof LivereTower === 'function') { return; }
+    j = d.createElement(s);
+    j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+    j.async = true;
+    e.parentNode.insertBefore(j, e);
+  })(document, 'script');
+});
+</script>
+
+</body>
+</html>

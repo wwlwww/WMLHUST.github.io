@@ -926,7 +926,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/10/30/CSAPP-2-%E4%BF%A1%E6%81%AF%E7%9A%84%E8%A1%A8%E7%A4%BA%E5%92%8C%E5%A4%84%E7%90%86/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/11/28/CSAPP-8-2-%E5%BC%82%E5%B8%B8%E6%8E%A7%E5%88%B6%E6%B5%812/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/avatar.png">
@@ -940,7 +940,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2016/10/30/CSAPP-2-%E4%BF%A1%E6%81%AF%E7%9A%84%E8%A1%A8%E7%A4%BA%E5%92%8C%E5%A4%84%E7%90%86/" class="post-title-link" itemprop="url">CSAPP-2-信息的表示和处理</a>
+            <a href="/2016/11/28/CSAPP-8-2-%E5%BC%82%E5%B8%B8%E6%8E%A7%E5%88%B6%E6%B5%812/" class="post-title-link" itemprop="url">CSAPP-8.2-异常控制流2</a>
         </h2>
 
         <div class="post-meta">
@@ -950,7 +950,20 @@
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2016-10-30 21:48:57" itemprop="dateCreated datePublished" datetime="2016-10-30T21:48:57+08:00">2016-10-30</time>
+              <time title="Created: 2016-11-28 10:57:58" itemprop="dateCreated datePublished" datetime="2016-11-28T10:57:58+08:00">2016-11-28</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">系统原理</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86/CSAPP/" itemprop="url" rel="index"><span itemprop="name">CSAPP</span></a>
+                </span>
             </span>
 
           
@@ -964,82 +977,219 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h2 id="信息的表示和处理"><a href="#信息的表示和处理" class="headerlink" title="信息的表示和处理"></a>信息的表示和处理</h2><h3 id="开篇"><a href="#开篇" class="headerlink" title="开篇"></a>开篇</h3><p>对计算机底层数的位形式表示和运算有疑问的同学，非常推荐一读。各种细节问题，拨云见日，豁然开朗。</p>
-<h3 id="信息存储"><a href="#信息存储" class="headerlink" title="信息存储"></a>信息存储</h3><ol>
-<li><p>数字表示，分三种情况：   </p>
-<ol>
-<li>无符号整数，普通二进制形式</li>
-<li>有符号整数，补码。</li>
-<li>浮点数，IEEE 754标准。</li>
+          <h2 id="进程"><a href="#进程" class="headerlink" title="进程"></a>进程</h2><ol>
+<li><p>进程是一个执行中的程序的实例。系统中的每个程序都是运行在某个进程的上下文中。上下文由程序正确运行所需的状态组成。这个状态包括，存放在存储器中的代码和数据，它的栈，通用目的寄存器内容，程序计数器，环境变量，以及打开文件描述符的集合。</p>
+</li>
+<li><p>每次用户向外壳（shell）运行一个可执行目标文件，shell会创建一个新的进程，然后再这个新进程的上下文中运行这个程序。应用程序也可以自己创建进程，并在创建的新进程中运行自己的代码或其他应用程序。</p>
+</li>
 </ol>
+<h3 id="私有地址空间"><a href="#私有地址空间" class="headerlink" title="私有地址空间"></a>私有地址空间</h3><ol>
+<li><p>进程为每个应用程序提供一个假象，好像它独占地使用系统地址空间。在一台有n位地址的机器上，地址空间是2<sup>n</sup>个可能地址的集合，0 ~ 2<sup>n</sup>-1。一般而言，和这个进程地址空间中的某个地址相关联的存储器字节，是不能被其他进程读写的。（肯定啊）从这个意义上说，这个地址空间是私有的。</p>
 </li>
-<li><p>最小可寻址存储器单位：字节（byte），8个二进制位（bit），2个16进制字符表示。</p>
+<li><p>地址空间的顶部（？~ 2<sup>n</sup>-1）是保留给内核的。这个部分包含内核的代码、数据、堆、栈等。</p>
 </li>
-<li><p>16进制记忆小技巧，记住A-10， C-12，F-15就可以了。</p>
+</ol>
+<h3 id="用户模式和内核模式"><a href="#用户模式和内核模式" class="headerlink" title="用户模式和内核模式"></a>用户模式和内核模式</h3><ol>
+<li><p>通过某个控制寄存器的一个模式位（mode bit），来控制进程运行在哪个模式。</p>
 </li>
-<li><p>字长<br>计算机的字长表示的是，处理器一次能够处理的最长二进制位数。当然也依赖操作系统和编译器。但是编译器程序的整数字节数，比如int、long的最大长度，跟计算机字长无关。<br>比如java不分32位、64位，所有的long都是8个字节，64位。这种想法主要源于，32位机器上C语言的long是4byte，64位机器上是8byte。坑啊。。</p>
+<li><p>运行应用程序代码的进程初始时是在用户模式中。进程从用户模式变为内核模式的唯一方法是通过中断、故障或者陷入陷阱进行系统调用。</p>
 </li>
-<li><p>字节序：大端、小端。<br>前提：计算机读取主存的顺序是从低位到高位。莫忘，基本单位是字节<br>大端：如同人阅读顺序。千位在低位内存，个位在高位内存。<br>小端：intel处理器，和大端正好相反。   </p>
-<p> 以数字 0x123456为例。随着内存地址递增的顺序：<br> 大端：0x12  0x34    0x56<br> 小端：0x56  0x34    0x12    </p>
-<p> 字节是基本的存储和读取单位！！它的值是不变的,所以字节内部顺序是不变的。</p>
+<li><p>Linux的/proc文件系统。它允许用户模式进程访问内核数据结构的内容。/proc文件系统将许多内核数据结构的内容输出为一个用户程序可以读的文本文件的层次结构。比如/proc/cpuinfo查看cpu类型，/proc/<process_id>/maps查看进程使用的存储器段。</p>
 </li>
-<li><p>整数的三种表示方式：原码、反码、补码，这三种方式可以互相通过一定的运算转换，但是它们都是独立的表示方式，都可以独立地表示正、负整数。</p>
+</ol>
+<h3 id="上下文切换"><a href="#上下文切换" class="headerlink" title="上下文切换"></a>上下文切换</h3><ol>
+<li><p>发生时机</p>
 <ul>
-<li><p>原码：最高位有效位，剩下的位决定值。这种表示方式最好理解。</p>
+<li><p>当程序切换到内核模式执行系统调用时，可能发生。如果系统调用因为某个等待的时间发生而阻塞，那么内核可以让当前进程休眠，切换到另一个进程。比如，一个read系统调用请求一个磁盘访问，内核可以选择执行上下文切换，运行另一个进程，而不是等待数据从磁盘到达。另一个示例是sleep系统调用，它显式的请求让调用进程休眠。</p>
 </li>
-<li><p>反码：最高位的权是，<img src="http://chart.googleapis.com/chart?cht=tx&chl=\Large -({2^{w-1}-1})" style="border:none;">，其他跟补码是一样的。</p>
-</li>
-<li><p>补码，现在计算机里大多用的就是补码，原因是加减操作可以使用统一的位操作。计算时，最高位的权为<img src="http://chart.googleapis.com/chart?cht=tx&chl=\Large -({2^{w-1}})" style="border:none;">。<br>补码可以从原码转换过来，正数的补码表示跟其原码表示相同，负数的补码是原码的按位取反再加一。</p>
-<p>此外，负数的补码往前扩充1值是不变的，如0xFF表示-1，0xFFFF还是-1，注意二进制轴上的对应关系。</p>
+<li><p>中断也可能引发上下文切换。每次发生定时器中断时，内核就判定当前进程已经运行了足够长的时间，并切换到一个新的进程。<br><img src="/images/csapp-8.2-1.jpeg" alt="上下文切换"></p>
 </li>
 </ul>
 </li>
-<li><p>一个w位的有符号数（补码）表达范围<img src="http://chart.googleapis.com/chart?cht=tx&chl=\Large [-{2^{w-1}},2^{w-1}-1]" style="border:none;">。<br>w位无符号数表达范围<img src="http://chart.googleapis.com/chart?cht=tx&chl=\Large [0,{2^{w}-1}]" style="border:none;">。<br>注意在位的角度它们的对应关系，比如32位补码-1的16进制表示为【0xFFFFFFFF】</p>
-</li>
-<li><p>C语言printf在输出的时候，%u-无符号整数，%d有符号整数，根据格式化指示符来解释入参的“二进制位”。<br>还要注意如果要输出一个byte的二进制要用unsigned char *指针，char *指针会由于位扩展，输出扩展后的4个字节，根据原字节首位的情况，正数前面扩展0，负数扩展1。</p>
-</li>
-<li><p>整数的加减法运算   </p>
+<li><p>中断处理程序/上下文切换 污染高速缓存<br><br>中断处理程序如果访问了足够多的表项，那么再切换回应用程序时，缓存是冷的。上下文切换也会出现同样的情况。（那怎么办？）</p>
 </li>
 </ol>
-<p>前提：在CPU看来，所有的数的二进制表示都是补码。所有的操作都是位上的操作。所有的溢出，高位都被直接截断丢掉。至于某一串二进制如何解释（有or无符号），这是人为的设定。   </p>
-<p>结论：<strong>减去一个二进制串，等于加上其逆元。</strong> 逆元 = 二进制按位取反再+1。(是不是和原码转补码很像？但是切记，不是一个东西。)<br>减法运算，有符号整数无需多言，减去一个数等于加上该数的逆元。有符号整数也是如此，举例为证。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//假设int是8位</span></span><br><span class="line"> <span class="keyword">unsigned</span> <span class="keyword">int</span> a = <span class="number">1</span>;  <span class="comment">//0b0000 0001</span></span><br><span class="line"> <span class="keyword">unsigned</span> <span class="keyword">int</span> b = <span class="number">2</span>;  <span class="comment">//0b0000 0010</span></span><br><span class="line"> <span class="built_in">printf</span>(<span class="string">"%s\n"</span>, a-b&gt;<span class="number">0</span>?<span class="string">"true"</span>:<span class="string">"false"</span>);  <span class="comment">//output:true</span></span><br></pre></td></tr></table></figure>
+<h2 id="系统调用错误处理"><a href="#系统调用错误处理" class="headerlink" title="系统调用错误处理"></a>系统调用错误处理</h2><p>当Unix系统级函数遇到错误时，它们会典型地返回-1，并设置全局整数变量errno来表示出了什么错。可以用<br>strerror(errno)来返回errno此时相关联的错误。</p>
+<h2 id="进程控制"><a href="#进程控制" class="headerlink" title="进程控制"></a>进程控制</h2><h3 id="进程ID"><a href="#进程ID" class="headerlink" title="进程ID"></a>进程ID</h3><ul>
+<li><p>每个进程都有一个唯一的正数ID，称为PID。</p>
+</li>
+<li><p>可以用getpid()来获取。getppid()可以返回它父进程的PID。</p>
+</li>
+</ul>
+<h3 id="创建、终止进程。"><a href="#创建、终止进程。" class="headerlink" title="创建、终止进程。"></a>创建、终止进程。</h3><ol>
+<li><p>相同、独立的地址空间。父子进程拥有相同的用户栈、相同的本地变量值、相同的堆、相同的全局变量值、以及相同的代码。子进程得到与父进程用户级虚拟地址空间相同，但是独立的一份拷贝。包括文本、数据和bss段、堆以及用户栈。对比一下第七章讲的进程存储器映像，除下内核地址空间和共享库，其他都拷贝了。</p>
+</li>
+<li><p>子进程还获得和父进程任何打开的文件描述符相同的拷贝。这就意味着调用fork后，子进程可以读写fork之前父进程打开的任何文件。</p>
+</li>
+<li><p>阻塞，进程的执行被暂时挂起（suspend）。当收到SIGSTOP、SIGTSTP、SIGTTIN、SIGTTOU信号时，进程就会阻塞挂起，直到它收到一个SIGCONT信号才会继续。信号是一种软件中断的形式。</p>
+</li>
+<li><p>终止，进程永远停止。进程会因为三种原因终止：</p>
+<ul>
+<li><p>收到一个信号，信号的默认行为是终止进程。（比如: kill -9）</p>
+</li>
+<li><p>从主程序（main）返回</p>
+</li>
+<li><p>调用exit函数。exit函数以status退出状态来终止进程（另一种设置退出状态的是从主程序返回一个数值）</p>
+</li>
+</ul>
+</li>
+</ol>
+<h3 id="回收子进程"><a href="#回收子进程" class="headerlink" title="回收子进程"></a>回收子进程</h3><h4 id="僵死进程"><a href="#僵死进程" class="headerlink" title="僵死进程"></a>僵死进程</h4><ol>
+<li><p>当一个进程由于某种原因终止时，内核并不是立即把它从系统中清除。相反，进程会保持在一种已终止的状态中，知道被它的父进程回收。当父进程回收已终止的子进程时，内核将子进程的退出状态（上一小节说的exit status？）传递给父进程，然后抛弃已终止的进程，从此时开始，该进程就不存在了。一个终止了，但还未被回收的进程称为僵死进程。</p>
+</li>
+<li><p>如果父进程没有回收它自己的僵死子进程就终止了，那么内核会安排init进程来回收它们。init进程PID为1，并且是由系统初始化时内核创建的。</p>
+</li>
+</ol>
+<h4 id="等待子进程结束"><a href="#等待子进程结束" class="headerlink" title="等待子进程结束"></a>等待子进程结束</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1.</span> waitpid(<span class="keyword">pid_t</span> pid, <span class="keyword">int</span> *status, <span class="keyword">int</span> options)</span><br><span class="line"></span><br><span class="line"><span class="number">2.</span> wait(<span class="keyword">int</span> *status) ，相当于调用waitpid(<span class="number">-1</span>, &amp;status, <span class="number">0</span>)</span><br></pre></td></tr></table></figure>
 
-<p>解释一下a-b的过程，先求b的逆元 0b1111 1110，与a相加，结果0b1111 1111，按补码解释也就是-1，按无符号整数解释是255，所以输出true。<br>那么如何判断加法运算是否溢出？画个二进制轴，特别好理解。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 无符号加法</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">uadd_ok</span><span class="params">(<span class="keyword">unsigned</span> x, <span class="keyword">unsigned</span> y)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">   <span class="keyword">unsigned</span> sum = x + y;</span><br><span class="line">   <span class="keyword">return</span> sum &gt;= x;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//有符号，分情况，正溢出or负溢出</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">tadd_ok</span><span class="params">(<span class="keyword">int</span> x, <span class="keyword">int</span> y)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">   <span class="keyword">int</span> sum = x + y;</span><br><span class="line">   <span class="keyword">int</span> neg_over = x &lt; <span class="number">0</span> &amp;&amp; y &lt; <span class="number">0</span> &amp;&amp; sum &gt; <span class="number">0</span>;</span><br><span class="line">   <span class="keyword">int</span> pos_over = x &gt;= <span class="number">0</span> &amp;&amp; y &gt;= <span class="number">0</span> &amp;&amp; sum &lt; <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">   <span class="keyword">return</span> neg_over || pos_over;</span><br><span class="line">&#125;</span><br><span class="line">``` </span><br><span class="line"></span><br><span class="line"><span class="number">10.</span> 整数乘法   </span><br><span class="line">同样，有符号与无符号在CPU看来，都是两个二进制串的同一个操作。对于乘法有可能溢出的情况，同样，保留后w位，截断高位。   </span><br><span class="line">乘法通常都比较慢，需要<span class="number">10</span>个时钟周期或更多。然而其他整数运算（例如加法、减法、位级运算和移位）只需要一个时钟周期。因此乘以一个常数，可以考虑用移位代替。即使乘法发生了溢出，也是有效的。如:</span><br></pre></td></tr></table></figure>
-<p>x * 14;<br>相当于 (x&lt;&lt;3) + (x&lt;&lt;2) + (x&lt;&lt;1); // 三个移位，两个加法<br>也相当于 (x&lt;&lt;4) - (x&lt;&lt;1); // 两个移位，一个加法。   </p>
-<p>```</p>
-<ol start="11">
-<li><p>整数除法<br>大多数机器上，整数除法比整数乘法更慢—需要30个或更多时钟周期。<br>总是向零舍入。-3/2=-1; 3/2=1;<br>除数如果是2的正数幂，可以通过右移位来实现，但是<strong>无法推广到普通的除数</strong>。其实是个分配律的问题x * (a + b + c) = x * a + x * b + x * c; 然而 x / (a + b + c)不行。   </p>
+<h3 id="休眠"><a href="#休眠" class="headerlink" title="休眠"></a>休眠</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">unsigned</span> <span class="keyword">int</span> <span class="title">sleep</span><span class="params">(<span class="keyword">unsigned</span> <span class="keyword">int</span> secs)</span></span>;</span><br></pre></td></tr></table></figure>
+<p>如果请求的时间量到了，sleep返回0，否则返回还剩下的要休眠的秒数。后一种情况，可能发生在sleep函数被一个信号中断而提前返回的情况。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">pause</span><span class="params">(<span class="keyword">void</span>)</span></span>;</span><br></pre></td></tr></table></figure>
+<p>pause()函数使调用者休眠，直到该进程收到一个信号。</p>
+<h3 id="加载并运行程序，execve"><a href="#加载并运行程序，execve" class="headerlink" title="加载并运行程序，execve"></a>加载并运行程序，execve</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">execve</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span> *filename, <span class="keyword">const</span> <span class="keyword">char</span> *argv[], <span class="keyword">const</span> <span class="keyword">char</span> *envp[])</span></span>;</span><br></pre></td></tr></table></figure>
+
+<p>execve函数加载并运行可执行文件filename，且带参数列表argv和环境变量列表envp。execve调用一次从不返回，除非出现错误。main函数也是三个参数，不过envp是隐藏的默认参数。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span> *argv[], <span class="keyword">char</span> *envp[])</span></span>;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/csapp-8.2-2.jpeg" alt="用户栈典型结构"></p>
+<p>用户栈典型结构，注意啦，复习下进程的存储器映像，栈是从高地址向地地址分配，所以栈底的地址比栈顶大。argv和envp，都是以一个null元素结尾，因此即使不知道argv和envp的长度，也可以依次打印出来，而避免越界。</p>
+<p>几个操作envp的函数</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">char</span> *<span class="title">getenv</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span> *name)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">setenv</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span> *name, <span class="keyword">const</span> <span class="keyword">char</span> *newvalue, <span class="keyword">int</span> overwrite)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">unsetenv</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span> *name)</span></span>;</span><br></pre></td></tr></table></figure>
+
+<h3 id="fork和execve"><a href="#fork和execve" class="headerlink" title="fork和execve"></a>fork和execve</h3><h4 id="区别"><a href="#区别" class="headerlink" title="区别"></a>区别</h4><p>fork函数在新的子进程中运行相同的程序，新的子进程时父进程的一个复制品。execve函数在当前进程的上下文中运行一个新的程序。它会覆盖当前进程的地址空间，但是并没有创建一个新进程。新的程序仍然有相同的PID，并且继承了调用execve函数时，已打开的所有文件描述符。</p>
+<h4 id="利用fork和execve运行程序"><a href="#利用fork和execve运行程序" class="headerlink" title="利用fork和execve运行程序"></a>利用fork和execve运行程序</h4><p>shell进程就是这样来执行命令。简单版如下，再结合waitpid就可以实现相应的后台执行等功能。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>（pid = fork() == <span class="number">0</span>)</span><br><span class="line">&#123;</span><br><span class="line">   <span class="keyword">if</span>(execve(argv[<span class="number">0</span>], argv, environ) &lt; <span class="number">0</span>)</span><br><span class="line">   &#123;</span><br><span class="line">      <span class="built_in">printf</span>(<span class="string">"%s: Command not found.\n"</span>, argv[<span class="number">0</span>]);</span><br><span class="line">      <span class="built_in">exit</span>(<span class="number">0</span>);</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/11/28/CSAPP-8-3-%E5%BC%82%E5%B8%B8%E6%8E%A7%E5%88%B6%E6%B5%813/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.png">
+      <meta itemprop="name" content="WordGe">
+      <meta itemprop="description" content="厉害了~">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="小本本">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2016/11/28/CSAPP-8-3-%E5%BC%82%E5%B8%B8%E6%8E%A7%E5%88%B6%E6%B5%813/" class="post-title-link" itemprop="url">CSAPP-8.3-异常控制流3</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2016-11-28 10:57:58" itemprop="dateCreated datePublished" datetime="2016-11-28T10:57:58+08:00">2016-11-28</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">系统原理</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86/CSAPP/" itemprop="url" rel="index"><span itemprop="name">CSAPP</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="信号"><a href="#信号" class="headerlink" title="信号"></a>信号</h2><h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><p><img src="/images/csapp-8.3-1.jpeg" alt="这里写图片描述"></p>
+<p>每种信号类型都对应某种系统事件。底层的硬件异常是由内核异常处理程序处理的，正常情况下，堆用户进程而言是不可见的。信号提供了一种机制，统治用户进程发生了这些异常。当一个子进程终止或者停止时，内核会发送一个SIGCHLD信号给父进程。</p>
+<h3 id="发送信号"><a href="#发送信号" class="headerlink" title="发送信号"></a>发送信号</h3><ol>
+<li><p>内核更新目的进程上下文中的某个状态，来给目的进程发送信号。一个进程可以给它自己发信号。向进程发信号都是基于进程组（process group）的概念。</p>
 </li>
-<li><p>浮点数<br>直接说IEEE 754标准的浮点数表示。<br>一个二进制串分为三部分。   </p>
+<li><p>进程组。每个进程都只属于一个进程组，进程组由一个正整数<strong>进程组ID, pgid</strong>标识。shell也为每个作业（job）都创建一个独立的进程组，pgid是新进程的pid。如果这个新进程再继续创建子进程，默认地，一个子进程和它的父进程同属于一个进程组。一个进程可以通过函数改变自己活其他进程的进程组。（权限？）</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">pid_t</span> <span class="title">getpgrp</span><span class="params">(<span class="keyword">void</span>)</span></span>;   <span class="comment">//返回调用进程的进程组ID</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">setpgid</span><span class="params">(<span class="keyword">pid_t</span> pid, <span class="keyword">pit_t</span> pgid)</span></span>;    <span class="comment">//设置一个进程的进程组id，成功返回0，失败-1.</span></span><br></pre></td></tr></table></figure></li>
+<li><p>kill命令可以给其他进程发送任意的信号。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">kill -9 1234          //给进程1234发送信号9（SIGKILL）</span><br><span class="line">kill -9 -1234         //负的pid，表示给1234这个进程组，的每个进程发信号9</span><br><span class="line">kill -9 0             //0，给当前进程所在进程组，的每个进程发信号9</span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/types.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;signal.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* 进程可以调用kill函数发送信号，包括给他们自己 */</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">kill</span><span class="params">(<span class="keyword">pid_t</span> pid, <span class="keyword">int</span> sig)</span></span>;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* 调用alarm函数可以给它自己发送SIGALRM信号 */</span></span><br><span class="line"><span class="function"><span class="keyword">unsigned</span> <span class="keyword">int</span> <span class="title">alarm</span><span class="params">(<span class="keyword">unsigned</span> <span class="keyword">int</span> sig)</span></span>;</span><br></pre></td></tr></table></figure>
+
 </li>
 </ol>
+<h3 id="接收信号"><a href="#接收信号" class="headerlink" title="接收信号"></a>接收信号</h3><ol>
+<li><p>接收信号。内核为每个进程在pending位向量维护着待处理信号的集合，而在blocked位向量中维护着被阻塞的信号集合。所以在任何时刻一种类型的信号只会被接收一次，在处理它的时候，会先把该类型的信号block。进程可以忽略信号，也可以捕获这个信号，执行信号处理程序。</p>
+</li>
+<li><p>当内核从一个异常处理程序返回（进程调度也属于一种异常？定时器中断？），准备把控制传递给某个进程p时，它会检查进程p的未被阻塞的待处理信号集合（pending &amp; ~blocked）。如果这个集合不为空，那么内核选择集合中的某个信号k（通常是编号最小的信号，所以Linux信号编号还是特意的呢，编号越小，优先级越高），并进入k的处理程序。</p>
+<p>Ps:在block的时候，来的信号会不会标记到pending里？</p>
+<p>答案：会的。执行信号的处理动作称为信号递达（Delivery），信号从产生到递达之间的状态，称为信号未决（Pending）。进程可以选择阻塞（Block）某个信号。<strong>被阻塞的信号在产生时将保持在未决状态</strong>，直到进程解除对此信号的阻塞，才执行递达的动作。注意，阻塞和忽略是不同的，只要信号被阻塞就不会递达，而忽略是在递达之后可选的一种处理动作。忽略也可以说是信号处理程序的一种。</p>
+</li>
+<li><p>信号的默认处理程序是如下中的一种：</p>
 <ul>
-<li>符号位，1位，决定正负。</li>
-<li>阶码 E，对浮点数加权，2^E。C语言里float，8位；double, 11位。</li>
-<li>尾数 M，二进制小数，计算分情况。C里float, 23位；double, 52位。</li>
+<li><p>进程终止</p>
+</li>
+<li><p>进程终止并转储存储器（dump core）</p>
+</li>
+<li><p>进程暂停，直到被SIGCONT信号重启</p>
+</li>
+<li><p>进程忽略该信号</p>
+</li>
 </ul>
-<p>计算根据阶码分为三种，规格化、非规格化、特殊值，float为例：   </p>
-<ul>
-<li>规格化，E各位不全为0也不全为1，即e!=0 &amp;&amp; e!=255。E = e - 127。所以E的范围其实是[-126, 127] 。此时 M = m + 1。所以最后绝对值为 M·2^E = (m+1)·2^(e-127)。   </li>
-<li>非规格化，全为0，e=0。E = 1 - 127. M = m。所以最后绝对值为 M·2^E = m·2^(-126)。 当m取最小值2^(-23) 时，这也是float能够表示的最小非零数，2^(-149)。</li>
-<li>特殊值，全为1，e=255。当m=0时，根据符号位分别得到+∞和-∞。当m!=0时，得到NaN，意为 Not a Number。</li>
-</ul>
-<p>至于为什么e=0时，M=m而不是M=m+1？   </p>
-<p>此处结合e=0时，E也不是0-127，而是1-127,正好等于规格化的最小e，也是1-127。这个在非规格化向规格化过渡的时候，相同的指数值，保证整个f的值会随着m的增长而增大（线性的）。因此，对浮点数排序时，也可以像整数一样，直接比较其二进制位，从高位开始比较。   </p>
-<p>这个设计很有意思，假如在非规格化时，E=0-127，M=1+m，非规格化最大数为E=-127,M=1 + (2^23 -1)/2^23，f= 2^E ·M=2^(-126) -2^(-150) 。规格化最小数为E=1-127，M=1+0，f’=2^(-126) 。（哎？f’&gt;f，额这是哪里算错了吗？）f’-f=2^(-150).   </p>
-<p>真实情况是，非规格化最大数为E=1-127，M=(2^23 -1)/2^23，f= 2^(-126) -2^(-149) ，规格化最小数仍然是f’= 2^(-126)。 f’-f=2 ^ (-149)。这正是相邻的两个非规格化数的间隔2^(-126) ·2^(-23) =2^(-149)。也就是说IEEE的这种设计保持了在非规格化和规格化数之间的一个平滑过渡。   </p>
-<ol start="13">
-<li>强转与舍入   </li>
+</li>
+<li><p>修改信号的默认处理程序（忽略，恢复默认行为，自定义）</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;signal.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">typedef</span> <span class="title">void</span> <span class="params">(*<span class="keyword">sighandler_t</span>)</span><span class="params">(<span class="keyword">int</span>)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">sighandler_t</span> <span class="title">signal</span><span class="params">(<span class="keyword">int</span> signum, <span class="keyword">sighandler_t</span> handler)</span></span>;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>待处理信号被阻塞。Unix信号处理程序通常会阻塞当前处理程序正在处理的类型的信号。比如正在执行SIGINT处理程序时，如果再来一个SIGINT信号，只会在pending里置1（感觉此时应该已经为1了）。</p>
+</li>
+<li><p>系统调用可以被中断。像read、wait和accept这样的系统调用会潜在地阻塞进程一段时间，称为慢速系统调用。在某些操作系统中，若正在执行慢速系统调用的时候收到了信号，当从信号处理程序返回时，原来的慢速系统调用可能不会继续，然而由于被信号中断，系统调用的任务并未完成。Linux系统会自动重启被中断的系统调用。</p>
+</li>
+<li><p>阻塞和取消阻塞信号</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;signal.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* 改变blocked向量的值，若oldset!=null，会用来保存以前blocked向量的值 */</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">sigprocmask</span><span class="params">(<span class="keyword">int</span> how, <span class="keyword">const</span> <span class="keyword">sigset_t</span> *<span class="built_in">set</span>, <span class="keyword">sigset_t</span> *oldset)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* 初始化set为空集 */</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">sigemptyset</span><span class="params">(<span class="keyword">sigset_t</span> *<span class="built_in">set</span>)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* 初始化set全为1，每个信号都填入blocked向量 */</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">sigfillset</span><span class="params">(sigset *<span class="built_in">set</span>)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* 添加、删除signum到set */</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">sigaddset</span><span class="params">(<span class="keyword">sigset_t</span> *<span class="built_in">set</span>, <span class="keyword">int</span> signum)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">sigdelset</span><span class="params">(<span class="keyword">sigset_t</span> *<span class="built_in">set</span>, <span class="keyword">int</span> signum)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* set中对应signum是否置1 */</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">sigismember</span><span class="params">(<span class="keyword">const</span> <span class="keyword">sigset_t</span> *<span class="built_in">set</span>, <span class="keyword">int</span> signum)</span></span>;</span><br></pre></td></tr></table></figure>
+
+</li>
 </ol>
-<ul>
-<li>int转为float，不会溢出，但是可能被舍入，毕竟都只有2^32个状态，能表达的总信息量是一定的。如 2^24 +1和2^24 强转为float后，值为2^24.000000。舍入的时候会有一种特殊情况，称为向偶数舍入，在非有效位值正好是两个可能值的中间值时，我们倾向于通过取舍，使得有效位的最后一位为0.</li>
-<li>double转float, 可能溢出为-∞或+∞.</li>
-<li>float和double转int，向零舍入。如果出现溢出，则值会变成0b1000 0000，也就是-Min。此处可以注意下。</li>
-</ul>
-<ol start="14">
-<li>浮点的运算<br>主要是一点，<strong>不可结合，和分配</strong>，主要原因是，中间值可能会±∞或NaN。</li>
+<h2 id="非本地跳转"><a href="#非本地跳转" class="headerlink" title="非本地跳转"></a>非本地跳转</h2><p>C语言提供了一种用户级异常控制流形式，称为非本地跳转（nonlocal jump)。它将控制直接从一个函数转移到另一个当前正在执行的函数，而不需要经过正常的调用-返回序列。涉及到的两个函数分别是setjmp和longjmp。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;setjmp.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">setjmp</span><span class="params">(jmp_buf env)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">sigsetjmp</span><span class="params">(sigjmp_buf env, <span class="keyword">int</span> savesigs)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">longjmp</span><span class="params">(jmp_buf env, <span class="keyword">int</span> retval)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">siglongjmp</span><span class="params">(sigjmp_buf env, <span class="keyword">int</span> retval)</span></span>;</span><br></pre></td></tr></table></figure>
+<ol>
+<li><p>setjmp函数在env缓冲区中保存当前的调用环境，以供后面longjmp使用，并返回0，调用环境包括程序计数器、栈指针和通用目的寄存器。</p>
+</li>
+<li><p>longjmp函数从env缓冲区中恢复调用环境，然后从最近一次setjmp的env中恢复，恢复的时候相当于setjmp函数的返回，只是返回值非0（longjmp的第二个参数）。longjmp函数只有调用，没有返回。此外，setjmp函数调用一次，可以返回多次。</p>
+</li>
+<li><p>非本地跳转的一个重要应用是允许从一个深层嵌套的函数调用中立即返回。如果再一个深层嵌套的函数中发现了错误，可以调用longjmp(env, ret)，直接返回到setjmp处，然后根据返回的ret值判断是什么错误，调用什么样的错误处理程序。类似java的try…catch语句。</p>
+</li>
+</ol>
+<h2 id="操作进程的工具"><a href="#操作进程的工具" class="headerlink" title="操作进程的工具"></a>操作进程的工具</h2><ol>
+<li><p>strace: 打印一个正在运行的程序和它的子进程调用的每个系统调用的轨迹。</p>
+</li>
+<li><p>pmap: 显示进程的存储器映射</p>
+</li>
+<li><p>/proc：一个虚拟文件系统，以ASCII文本格式输出大量内核数据结构的内容，用户程序可以读取这些内容。比如 cat /proc/loadavg，观察linux系统上当前的平均负载。</p>
+</li>
 </ol>
 
       
@@ -1060,7 +1210,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/10/28/CSAPP-1-%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F%E6%BC%AB%E6%B8%B8/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/11/28/CSAPP-8-1-%E5%BC%82%E5%B8%B8%E6%8E%A7%E5%88%B6%E6%B5%811/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/avatar.png">
@@ -1074,7 +1224,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2016/10/28/CSAPP-1-%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F%E6%BC%AB%E6%B8%B8/" class="post-title-link" itemprop="url">CSAPP-1-计算机系统漫游</a>
+            <a href="/2016/11/28/CSAPP-8-1-%E5%BC%82%E5%B8%B8%E6%8E%A7%E5%88%B6%E6%B5%811/" class="post-title-link" itemprop="url">CSAPP-8.1-异常控制流1</a>
         </h2>
 
         <div class="post-meta">
@@ -1084,7 +1234,20 @@
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2016-10-28 21:39:38" itemprop="dateCreated datePublished" datetime="2016-10-28T21:39:38+08:00">2016-10-28</time>
+              <time title="Created: 2016-11-28 10:50:57" itemprop="dateCreated datePublished" datetime="2016-11-28T10:50:57+08:00">2016-11-28</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">系统原理</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86/CSAPP/" itemprop="url" rel="index"><span itemprop="name">CSAPP</span></a>
+                </span>
             </span>
 
           
@@ -1098,45 +1261,90 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h3 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h3><p>工作找得差不多之后，总是感觉技术方向很迷茫。后面看一本书《暗时间》，上面说的对：</p>
-<blockquote>
-<p>大量的新技术其实只是一层皮，背后的支撑技术其实都是十来年不变的东西。底层知识永不过时；算法数据结构永不过时；分析问题和解决问题的能力永不过时；强大的学习能力和旺盛的求知欲永不过时；你大脑的思维方式永不过时。</p>
-</blockquote>
-<blockquote>
-<p>关于读书速度<br>有选择地阅读。 对于一些逻辑混乱，作者都不知道自己问题是什么，或者上来就是技术方法细节，而不是从方法背后的理念出发，直观解释的书，没必要一定说服自己读下去，继续读反而是增加烦恼，浪费时间。</p>
-</blockquote>
-<blockquote>
-<p>快or慢。 快慢从来不是一个问题，好书、知识密度大、需要思考的书就慢读。质量差，没啥的，该快就快，有必要过一遍的话，该不读就直接扔一边去，没必要纠结。<br>“三天打鱼，两天晒网”的人往往最后会变成“整天晒网，永不打鱼”。也就是说耐心和恒心吧。一本再厚的书，每天看一点，<strong>总有看完的一天</strong>。</p>
-</blockquote>
-<h3 id="言归正传"><a href="#言归正传" class="headerlink" title="言归正传"></a>言归正传</h3><ol>
-<li><p>信息就是 <strong>位+上下文</strong></p>
+          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>这一章真是解惑众多啊，关于中断、信号、进程。非常非常值得一看，CSAPP真是神书。</p>
+<h2 id="异常"><a href="#异常" class="headerlink" title="异常"></a>异常</h2><h3 id="定义和场景"><a href="#定义和场景" class="headerlink" title="定义和场景"></a>定义和场景</h3><ol>
+<li><p>现代系统通过使控制流发生突变来对这些情况做出反应。异常发生在计算机系统的各个层次，比如：</p>
+<ul>
+<li><p>硬件层，硬件检测到的事件会出发控制突然转移到异常处理程序。</p>
 </li>
-<li><p>利用直接存储器存取（DMA）技术，数据可以不通过处理器而直接从磁盘到达内存。</p>
+<li><p>操作系统层，内核通过上下文转换将控制从一个用户进程转移到另一个用户进程。</p>
 </li>
-<li><p>hello world 程序在执行的时候，hello world 字符串复制路径：硬盘-&gt;主存-&gt;寄存器-&gt;显示设备。</p>
+<li><p>应用层，一个进程可以发送信号到另一个进程，信号接收者会将控制突然转移到它的一个信号处理程序。</p>
 </li>
-<li><p>一个典型系统的硬件组成：<br><img src="/images/csapp-1.1.jpeg" alt="一个典型系统的硬件组成"></p>
+</ul>
 </li>
-<li><p>存储设备形成设备层次<br><img src="/images/csapp-1.2.jpeg" alt="存储器层次"></p>
+<li><p>应用程序通过陷阱（trap）或者系统调用（system call）的ECF形式，向操作系统请求服务。</p>
 </li>
-<li><p>进程的上下文切换<br><img src="/images/csapp-1.3.jpeg" alt="这里写图片描述"><br>系统调用和中断的关系就在于，当进程发出系统调用申请的时候，会产生一个软件中断。产生这个软件中断以后，系统会去对这个软中断进行处理，这个时候进程就处于核心态了。</p>
-</li>
-<li><p>操作系统有两个基本的功能：</p>
-<blockquote>
-<ol>
-<li>防止硬件被失控的应用程序滥用。（应用程序只能通过系统调用的方式来请求）</li>
-<li>向应用程序提供简单一致的机制来控制复杂而又大相径庭的低级硬件设备。比如对于所有的I/O设备，包括硬盘、键盘、显示器、网络都视为文件，通过一组称为UNIX I/O的系统函数调用来实现输入输出。</li>
 </ol>
-</blockquote>
-</li>
-<li><p>操作系统内核是应用程序和硬件之间的媒介。提供三个基本的抽象：</p>
-<blockquote>
+<h3 id="异常的执行"><a href="#异常的执行" class="headerlink" title="异常的执行"></a>异常的执行</h3><p><img src="/images/csapp-8.1-1.jpeg" alt="异常的剖析"><br><br>异常处理程序在执行结束后，会发生以下三种情况之一：</p>
 <ol>
-<li>文件是I/O设备的抽象</li>
-<li>虚拟存储器是对主存和磁盘的抽象</li>
-<li>进程是对一个正在运行的程序的抽象，包括处理器、主存和IO设备。</li>
+<li>返回应用程序当前指令I<sub>curr</sub></li>
+<li>返回应用程序的下一条指令I<sub>next</sub></li>
+<li>异常处理程序终止被中断的应用程序</li>
 </ol>
-</blockquote>
+<h3 id="异常的处理"><a href="#异常的处理" class="headerlink" title="异常的处理"></a>异常的处理</h3><h4 id="基本知识"><a href="#基本知识" class="headerlink" title="基本知识"></a>基本知识</h4><ol>
+<li>系统中的美中类型异常都分配了一个唯一的非负整数，作为异常号。系统启动时会初始化一张异常表，异常表的起始地址存在一个特殊的CPU寄存器里，异常表基址寄存器。<br><br><img src="/images/csapp-8.1-2.jpeg" alt="异常表"></li>
+<li>异常处理程序运行在内核模式，这意味着它们对所有的系统资源都有完全的访问权限。</li>
+<li>异常分类：<br><br>中断是异步的，不由任何一条指令造成。其他三种异常是同步的，是执行当前指令的结果。<br><img src="/images/csapp-8.1-3.jpeg" alt="异常的类别"></li>
+</ol>
+<h4 id="中断"><a href="#中断" class="headerlink" title="中断"></a>中断</h4><ol>
+<li><p>来自处理器外部I/O设备的信号的结果。硬件中断不是由任何一条专门的指令造成的。I/O设备通过向处理器芯片上的一个引脚发信号，并将异常号放到系统总线上，以触发中断，这个异常号标识了引起中断的设备。（也有软件中断？比如信号？）</p>
+</li>
+<li><p>中断处理的重点：</p>
+<ul>
+<li>检测到引脚电压变高，当前的指令会继续执行结束</li>
+<li>返回下一条指令</li>
+<li><img src="/images/csapp-8.1-4.jpeg" alt="中断处理"></li>
+</ul>
+</li>
+</ol>
+<h4 id="陷阱和系统调用"><a href="#陷阱和系统调用" class="headerlink" title="陷阱和系统调用"></a>陷阱和系统调用</h4><ol>
+<li><p>陷阱是有意的异常，是执行一条指令的结果。最重要的用途是在用户程序和内核之间提供一个接口，称为<strong>系统调用</strong>。</p>
+</li>
+<li><p>从程序员角度，系统调用和普通函数调用是一样的，然而它们的实现不同。普通函数运行在用户模式，用户模式限制了函数可以执行的指令类型，而且它们只能访问与调用函数相同的栈。系统调用运行在内核模式，内核模式允许系统调用执行指令，并访问定义在内核中的栈。</p>
+</li>
+<li><p>陷阱处理的重点:</p>
+<ul>
+<li>程序员主动调用，比如syscall指令。</li>
+<li>返回下一条指令，上一条指令就是syscall。</li>
+<li><img src="/images/csapp-8.1-5.jpeg" alt="陷阱处理"></li>
+</ul>
+</li>
+</ol>
+<h4 id="故障"><a href="#故障" class="headerlink" title="故障"></a>故障</h4><ol>
+<li><p>故障时由于指令执行发生了错误。这个错误可能被修复，若处理程序修复了，则返回重新执行这条指令，否则返回到内核中的abort例程（当做内核对外提供的一个服务即可），abort例程会终止引起该故障的应用程序。</p>
+</li>
+<li><p>一个经典的故障是缺页异常，当指令引用一个虚拟地址，而该虚拟地址相对应的物理页面不在存储器（包含缓存，主存等）中，因此必须从磁盘中取时，就会发生故障。当缺页处理程序加载好后，就将控制返回给应用程序。此时原指令再次执行，由于相应页面已经被加载到存储器中，因此此次执行不会引起故障。</p>
+</li>
+<li><p>故障处理的重点</p>
+<ul>
+<li>指令执行的结果。</li>
+<li>故障恢复成功。返回当前指令，重新执行一次。（会不会出现死循环？）</li>
+<li>故障恢复失败。通过abort例程，终止程序。</li>
+<li><img src="/images/csapp-8.1-6.jpeg" alt="故障处理"></li>
+</ul>
+</li>
+</ol>
+<h4 id="终止"><a href="#终止" class="headerlink" title="终止"></a>终止</h4><ol>
+<li><p>终止时由于不可恢复的致命错误造成的结果。通常是一些硬件错误。终止处理程序直接将控制返回给abort例程，abort例程去终止这个应用程序。</p>
+</li>
+<li><p>终止处理的重点</p>
+<ul>
+<li>执行指令时，发生了不可恢复的致命错误。</li>
+<li>应用程序会直接终止。</li>
+<li><img src="/images/csapp-8.1-7.jpeg" alt="z"></li>
+</ul>
+</li>
+</ol>
+<h3 id="Linux-IA32中的异常"><a href="#Linux-IA32中的异常" class="headerlink" title="Linux/IA32中的异常"></a>Linux/IA32中的异常</h3><h4 id="异常-1"><a href="#异常-1" class="headerlink" title="异常"></a>异常</h4><ol>
+<li><p>有256种异常类型。0<del>31号为Intel架构师定义，32</del>255由操作系统定义的中断或陷阱。举例：<br><br><img src="/images/csapp-8.1-8.jpeg" alt="异常示例"></p>
+<p>特别出名的，比如“段错误”对应的是13，一般保护故障，通常是由于程序引用了一个未定义的虚拟存储器区域。系统调用是0X80.</p>
+</li>
+</ol>
+<h4 id="Linux-IA32系统调用"><a href="#Linux-IA32系统调用" class="headerlink" title="Linux/IA32系统调用"></a>Linux/IA32系统调用</h4><ol>
+<li><p>系统调用是异常的一种，属于陷阱，有意的异常。</p>
+</li>
+<li><p>IA32系统上，系统调用通过一条称为int n的陷阱指令来提供。Linux提供上百种系统调用。每个系统调用都有一个唯一的整数号，对应于一个到内核中跳转表的偏移量。看图：<br><br><img src="/images/csapp-8.1-9.jpeg" alt="系统调用示例"><br>C语言用syscall函数可以直接调用任何系统调用。然而实际中没必要这么做，标准C库做了很多封装的工作，使用更方便。所有到Linux系统调用的参数都是通过通用寄存器，而不是栈来传递的。</p>
 </li>
 </ol>
 
@@ -1157,7 +1365,7 @@
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span>
+    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/3/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -1225,20 +1433,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">19</span>
+          <span class="site-state-item-count">24</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-count">11</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-count">8</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
