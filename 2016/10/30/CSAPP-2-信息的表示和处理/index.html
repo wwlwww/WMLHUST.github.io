@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="信息的表示和处理开篇对计算机底层数的位形式表示和运算有疑问的同学，非常推荐一读。各种细节问题，拨云见日，豁然开朗。 信息存储 数字表示，分三种情况：     无符号整数，普通二进制形式 有符号整数，补码。 浮点数，IEEE 754标准。   最小可寻址存储器单位：字节（byte），8个二进制位（bit），2个16进制字符表示。  16进制记忆小技巧，记住A-10， C-12，F-15就可以了。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CSAPP-2-信息的表示和处理">
+<meta property="og:url" content="http://yoursite.com/2016/10/30/CSAPP-2-%E4%BF%A1%E6%81%AF%E7%9A%84%E8%A1%A8%E7%A4%BA%E5%92%8C%E5%A4%84%E7%90%86/index.html">
+<meta property="og:site_name" content="小本本">
+<meta property="og:description" content="信息的表示和处理开篇对计算机底层数的位形式表示和运算有疑问的同学，非常推荐一读。各种细节问题，拨云见日，豁然开朗。 信息存储 数字表示，分三种情况：     无符号整数，普通二进制形式 有符号整数，补码。 浮点数，IEEE 754标准。   最小可寻址存储器单位：字节（byte），8个二进制位（bit），2个16进制字符表示。  16进制记忆小技巧，记住A-10， C-12，F-15就可以了。">
+<meta property="og:image" content="http://chart.googleapis.com/chart?cht=tx&chl=%5CLarge%20-(%7B2%5E%7Bw-1%7D-1%7D)">
+<meta property="og:image" content="http://chart.googleapis.com/chart?cht=tx&chl=%5CLarge%20-(%7B2%5E%7Bw-1%7D%7D)">
+<meta property="og:image" content="http://chart.googleapis.com/chart?cht=tx&chl=%5CLarge%20%5B-%7B2%5E%7Bw-1%7D%7D,2%5E%7Bw-1%7D-1%5D">
+<meta property="og:image" content="http://chart.googleapis.com/chart?cht=tx&chl=%5CLarge%20%5B0,%7B2%5E%7Bw%7D-1%7D%5D">
+<meta property="article:published_time" content="2016-10-30T13:48:57.000Z">
+<meta property="article:modified_time" content="2016-10-30T13:48:57.000Z">
+<meta property="article:author" content="WordGe">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://chart.googleapis.com/chart?cht=tx&chl=%5CLarge%20-(%7B2%5E%7Bw-1%7D-1%7D)">
+
+<link rel="canonical" href="http://yoursite.com/2016/10/30/CSAPP-2-%E4%BF%A1%E6%81%AF%E7%9A%84%E8%A1%A8%E7%A4%BA%E5%92%8C%E5%A4%84%E7%90%86/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-Hans'
+  };
+</script>
+
+  <title>CSAPP-2-信息的表示和处理 | 小本本</title>
+  
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?048408dcae04570297e1804bd477cac3";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="小本本" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">小本本</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">学而时习之，不亦说乎</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/10/30/CSAPP-2-%E4%BF%A1%E6%81%AF%E7%9A%84%E8%A1%A8%E7%A4%BA%E5%92%8C%E5%A4%84%E7%90%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.png">
+      <meta itemprop="name" content="WordGe">
+      <meta itemprop="description" content="厉害了~">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="小本本">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          CSAPP-2-信息的表示和处理
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2016-10-30 21:48:57" itemprop="dateCreated datePublished" datetime="2016-10-30T21:48:57+08:00">2016-10-30</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="信息的表示和处理"><a href="#信息的表示和处理" class="headerlink" title="信息的表示和处理"></a>信息的表示和处理</h2><h3 id="开篇"><a href="#开篇" class="headerlink" title="开篇"></a>开篇</h3><p>对计算机底层数的位形式表示和运算有疑问的同学，非常推荐一读。各种细节问题，拨云见日，豁然开朗。</p>
+<h3 id="信息存储"><a href="#信息存储" class="headerlink" title="信息存储"></a>信息存储</h3><ol>
+<li><p>数字表示，分三种情况：   </p>
+<ol>
+<li>无符号整数，普通二进制形式</li>
+<li>有符号整数，补码。</li>
+<li>浮点数，IEEE 754标准。</li>
+</ol>
+</li>
+<li><p>最小可寻址存储器单位：字节（byte），8个二进制位（bit），2个16进制字符表示。</p>
+</li>
+<li><p>16进制记忆小技巧，记住A-10， C-12，F-15就可以了。</p>
+</li>
+<li><p>字长<br>计算机的字长表示的是，处理器一次能够处理的最长二进制位数。当然也依赖操作系统和编译器。但是编译器程序的整数字节数，比如int、long的最大长度，跟计算机字长无关。<br>比如java不分32位、64位，所有的long都是8个字节，64位。这种想法主要源于，32位机器上C语言的long是4byte，64位机器上是8byte。坑啊。。</p>
+</li>
+<li><p>字节序：大端、小端。<br>前提：计算机读取主存的顺序是从低位到高位。莫忘，基本单位是字节<br>大端：如同人阅读顺序。千位在低位内存，个位在高位内存。<br>小端：intel处理器，和大端正好相反。   </p>
+<p> 以数字 0x123456为例。随着内存地址递增的顺序：<br> 大端：0x12  0x34    0x56<br> 小端：0x56  0x34    0x12    </p>
+<p> 字节是基本的存储和读取单位！！它的值是不变的,所以字节内部顺序是不变的。</p>
+</li>
+<li><p>整数的三种表示方式：原码、反码、补码，这三种方式可以互相通过一定的运算转换，但是它们都是独立的表示方式，都可以独立地表示正、负整数。</p>
+<ul>
+<li><p>原码：最高位有效位，剩下的位决定值。这种表示方式最好理解。</p>
+</li>
+<li><p>反码：最高位的权是，<img src="http://chart.googleapis.com/chart?cht=tx&chl=\Large -({2^{w-1}-1})" style="border:none;">，其他跟补码是一样的。</p>
+</li>
+<li><p>补码，现在计算机里大多用的就是补码，原因是加减操作可以使用统一的位操作。计算时，最高位的权为<img src="http://chart.googleapis.com/chart?cht=tx&chl=\Large -({2^{w-1}})" style="border:none;">。<br>补码可以从原码转换过来，正数的补码表示跟其原码表示相同，负数的补码是原码的按位取反再加一。</p>
+<p>此外，负数的补码往前扩充1值是不变的，如0xFF表示-1，0xFFFF还是-1，注意二进制轴上的对应关系。</p>
+</li>
+</ul>
+</li>
+<li><p>一个w位的有符号数（补码）表达范围<img src="http://chart.googleapis.com/chart?cht=tx&chl=\Large [-{2^{w-1}},2^{w-1}-1]" style="border:none;">。<br>w位无符号数表达范围<img src="http://chart.googleapis.com/chart?cht=tx&chl=\Large [0,{2^{w}-1}]" style="border:none;">。<br>注意在位的角度它们的对应关系，比如32位补码-1的16进制表示为【0xFFFFFFFF】</p>
+</li>
+<li><p>C语言printf在输出的时候，%u-无符号整数，%d有符号整数，根据格式化指示符来解释入参的“二进制位”。<br>还要注意如果要输出一个byte的二进制要用unsigned char *指针，char *指针会由于位扩展，输出扩展后的4个字节，根据原字节首位的情况，正数前面扩展0，负数扩展1。</p>
+</li>
+<li><p>整数的加减法运算   </p>
+</li>
+</ol>
+<p>前提：在CPU看来，所有的数的二进制表示都是补码。所有的操作都是位上的操作。所有的溢出，高位都被直接截断丢掉。至于某一串二进制如何解释（有or无符号），这是人为的设定。   </p>
+<p>结论：<strong>减去一个二进制串，等于加上其逆元。</strong> 逆元 = 二进制按位取反再+1。(是不是和原码转补码很像？但是切记，不是一个东西。)<br>减法运算，有符号整数无需多言，减去一个数等于加上该数的逆元。有符号整数也是如此，举例为证。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//假设int是8位</span></span><br><span class="line"> <span class="keyword">unsigned</span> <span class="keyword">int</span> a = <span class="number">1</span>;  <span class="comment">//0b0000 0001</span></span><br><span class="line"> <span class="keyword">unsigned</span> <span class="keyword">int</span> b = <span class="number">2</span>;  <span class="comment">//0b0000 0010</span></span><br><span class="line"> <span class="built_in">printf</span>(<span class="string">"%s\n"</span>, a-b&gt;<span class="number">0</span>?<span class="string">"true"</span>:<span class="string">"false"</span>);  <span class="comment">//output:true</span></span><br></pre></td></tr></table></figure>
+
+<p>解释一下a-b的过程，先求b的逆元 0b1111 1110，与a相加，结果0b1111 1111，按补码解释也就是-1，按无符号整数解释是255，所以输出true。<br>那么如何判断加法运算是否溢出？画个二进制轴，特别好理解。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 无符号加法</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">uadd_ok</span><span class="params">(<span class="keyword">unsigned</span> x, <span class="keyword">unsigned</span> y)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">   <span class="keyword">unsigned</span> sum = x + y;</span><br><span class="line">   <span class="keyword">return</span> sum &gt;= x;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//有符号，分情况，正溢出or负溢出</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">tadd_ok</span><span class="params">(<span class="keyword">int</span> x, <span class="keyword">int</span> y)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">   <span class="keyword">int</span> sum = x + y;</span><br><span class="line">   <span class="keyword">int</span> neg_over = x &lt; <span class="number">0</span> &amp;&amp; y &lt; <span class="number">0</span> &amp;&amp; sum &gt; <span class="number">0</span>;</span><br><span class="line">   <span class="keyword">int</span> pos_over = x &gt;= <span class="number">0</span> &amp;&amp; y &gt;= <span class="number">0</span> &amp;&amp; sum &lt; <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">   <span class="keyword">return</span> neg_over || pos_over;</span><br><span class="line">&#125;</span><br><span class="line">``` </span><br><span class="line"></span><br><span class="line"><span class="number">10.</span> 整数乘法   </span><br><span class="line">同样，有符号与无符号在CPU看来，都是两个二进制串的同一个操作。对于乘法有可能溢出的情况，同样，保留后w位，截断高位。   </span><br><span class="line">乘法通常都比较慢，需要<span class="number">10</span>个时钟周期或更多。然而其他整数运算（例如加法、减法、位级运算和移位）只需要一个时钟周期。因此乘以一个常数，可以考虑用移位代替。即使乘法发生了溢出，也是有效的。如:</span><br></pre></td></tr></table></figure>
+<p>x * 14;<br>相当于 (x&lt;&lt;3) + (x&lt;&lt;2) + (x&lt;&lt;1); // 三个移位，两个加法<br>也相当于 (x&lt;&lt;4) - (x&lt;&lt;1); // 两个移位，一个加法。   </p>
+<p>```</p>
+<ol start="11">
+<li><p>整数除法<br>大多数机器上，整数除法比整数乘法更慢—需要30个或更多时钟周期。<br>总是向零舍入。-3/2=-1; 3/2=1;<br>除数如果是2的正数幂，可以通过右移位来实现，但是<strong>无法推广到普通的除数</strong>。其实是个分配律的问题x * (a + b + c) = x * a + x * b + x * c; 然而 x / (a + b + c)不行。   </p>
+</li>
+<li><p>浮点数<br>直接说IEEE 754标准的浮点数表示。<br>一个二进制串分为三部分。   </p>
+</li>
+</ol>
+<ul>
+<li>符号位，1位，决定正负。</li>
+<li>阶码 E，对浮点数加权，2^E。C语言里float，8位；double, 11位。</li>
+<li>尾数 M，二进制小数，计算分情况。C里float, 23位；double, 52位。</li>
+</ul>
+<p>计算根据阶码分为三种，规格化、非规格化、特殊值，float为例：   </p>
+<ul>
+<li>规格化，E各位不全为0也不全为1，即e!=0 &amp;&amp; e!=255。E = e - 127。所以E的范围其实是[-126, 127] 。此时 M = m + 1。所以最后绝对值为 M·2^E = (m+1)·2^(e-127)。   </li>
+<li>非规格化，全为0，e=0。E = 1 - 127. M = m。所以最后绝对值为 M·2^E = m·2^(-126)。 当m取最小值2^(-23) 时，这也是float能够表示的最小非零数，2^(-149)。</li>
+<li>特殊值，全为1，e=255。当m=0时，根据符号位分别得到+∞和-∞。当m!=0时，得到NaN，意为 Not a Number。</li>
+</ul>
+<p>至于为什么e=0时，M=m而不是M=m+1？   </p>
+<p>此处结合e=0时，E也不是0-127，而是1-127,正好等于规格化的最小e，也是1-127。这个在非规格化向规格化过渡的时候，相同的指数值，保证整个f的值会随着m的增长而增大（线性的）。因此，对浮点数排序时，也可以像整数一样，直接比较其二进制位，从高位开始比较。   </p>
+<p>这个设计很有意思，假如在非规格化时，E=0-127，M=1+m，非规格化最大数为E=-127,M=1 + (2^23 -1)/2^23，f= 2^E ·M=2^(-126) -2^(-150) 。规格化最小数为E=1-127，M=1+0，f’=2^(-126) 。（哎？f’&gt;f，额这是哪里算错了吗？）f’-f=2^(-150).   </p>
+<p>真实情况是，非规格化最大数为E=1-127，M=(2^23 -1)/2^23，f= 2^(-126) -2^(-149) ，规格化最小数仍然是f’= 2^(-126)。 f’-f=2 ^ (-149)。这正是相邻的两个非规格化数的间隔2^(-126) ·2^(-23) =2^(-149)。也就是说IEEE的这种设计保持了在非规格化和规格化数之间的一个平滑过渡。   </p>
+<ol start="13">
+<li>强转与舍入   </li>
+</ol>
+<ul>
+<li>int转为float，不会溢出，但是可能被舍入，毕竟都只有2^32个状态，能表达的总信息量是一定的。如 2^24 +1和2^24 强转为float后，值为2^24.000000。舍入的时候会有一种特殊情况，称为向偶数舍入，在非有效位值正好是两个可能值的中间值时，我们倾向于通过取舍，使得有效位的最后一位为0.</li>
+<li>double转float, 可能溢出为-∞或+∞.</li>
+<li>float和double转int，向零舍入。如果出现溢出，则值会变成0b1000 0000，也就是-Min。此处可以注意下。</li>
+</ul>
+<ol start="14">
+<li>浮点的运算<br>主要是一点，<strong>不可结合，和分配</strong>，主要原因是，中间值可能会±∞或NaN。</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2016/10/28/CSAPP-1-%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F%E6%BC%AB%E6%B8%B8/" rel="prev" title="CSAPP-1-计算机系统漫游">
+      <i class="fa fa-chevron-left"></i> CSAPP-1-计算机系统漫游
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/05/11/%E5%BC%80%E5%A4%A9%E8%BE%9F%E5%9C%B0/" rel="next" title="开天辟地">
+      开天辟地 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="lv-container" data-id="city" data-uid="MTAyMC81MDA3NC8yNjU2NQ=="></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#信息的表示和处理"><span class="nav-number">1.</span> <span class="nav-text">信息的表示和处理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#开篇"><span class="nav-number">1.1.</span> <span class="nav-text">开篇</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#信息存储"><span class="nav-number">1.2.</span> <span class="nav-text">信息存储</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="WordGe"
+      src="/avatar.png">
+  <p class="site-author-name" itemprop="name">WordGe</p>
+  <div class="site-description" itemprop="description">厉害了~</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">19</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">WordGe</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+  <script>
+    (function(){
+      var canonicalURL, curProtocol;
+      //Get the <link> tag
+      var x=document.getElementsByTagName("link");
+		//Find the last canonical URL
+		if(x.length > 0){
+			for (i=0;i<x.length;i++){
+				if(x[i].rel.toLowerCase() == 'canonical' && x[i].href){
+					canonicalURL=x[i].href;
+				}
+			}
+		}
+    //Get protocol
+	    if (!canonicalURL){
+	    	curProtocol = window.location.protocol.split(':')[0];
+	    }
+	    else{
+	    	curProtocol = canonicalURL.split(':')[0];
+	    }
+      //Get current URL if the canonical URL does not exist
+	    if (!canonicalURL) canonicalURL = window.location.href;
+	    //Assign script content. Replace current URL with the canonical URL
+      !function(){var e=/([http|https]:\/\/[a-zA-Z0-9\_\.]+\.baidu\.com)/gi,r=canonicalURL,t=document.referrer;if(!e.test(r)){var n=(String(curProtocol).toLowerCase() === 'https')?"https://sp0.baidu.com/9_Q4simg2RQJ8t7jm9iCKT-xh_/s.gif":"//api.share.baidu.com/s.gif";t?(n+="?r="+encodeURIComponent(document.referrer),r&&(n+="&l="+r)):r&&(n+="?l="+r);var i=new Image;i.src=n}}(window);})();
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script>
+NexT.utils.loadComments(document.querySelector('#lv-container'), () => {
+  window.livereOptions = {
+    refer: location.pathname.replace(CONFIG.root, '').replace('index.html', '')
+  };
+  (function(d, s) {
+    var j, e = d.getElementsByTagName(s)[0];
+    if (typeof LivereTower === 'function') { return; }
+    j = d.createElement(s);
+    j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+    j.async = true;
+    e.parentNode.insertBefore(j, e);
+  })(document, 'script');
+});
+</script>
+
+</body>
+</html>

@@ -22,8 +22,8 @@
 
   <meta name="description" content="剑指offer 1-23 题，思路简结">
 <meta property="og:type" content="article">
-<meta property="og:title" content="剑指offer题目思路简结（一）">
-<meta property="og:url" content="http://yoursite.com/2020/06/22/%E5%89%91%E6%8C%87offer%E9%A2%98%E7%9B%AE%E6%80%9D%E8%B7%AF%E7%AE%80%E7%BB%93%EF%BC%88%E4%B8%80%EF%BC%89/index.html">
+<meta property="og:title" content="剑指offer题目思路简结-1">
+<meta property="og:url" content="http://yoursite.com/2020/06/22/%E5%89%91%E6%8C%87offer%E9%A2%98%E7%9B%AE%E6%80%9D%E8%B7%AF%E7%AE%80%E7%BB%93-1/index.html">
 <meta property="og:site_name" content="小本本">
 <meta property="og:description" content="剑指offer 1-23 题，思路简结">
 <meta property="og:image" content="http://yoursite.com/images/jian_zhi_offer.jpg">
@@ -34,7 +34,7 @@
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://yoursite.com/images/jian_zhi_offer.jpg">
 
-<link rel="canonical" href="http://yoursite.com/2020/06/22/%E5%89%91%E6%8C%87offer%E9%A2%98%E7%9B%AE%E6%80%9D%E8%B7%AF%E7%AE%80%E7%BB%93%EF%BC%88%E4%B8%80%EF%BC%89/">
+<link rel="canonical" href="http://yoursite.com/2020/06/22/%E5%89%91%E6%8C%87offer%E9%A2%98%E7%9B%AE%E6%80%9D%E8%B7%AF%E7%AE%80%E7%BB%93-1/">
 
 
 <script id="page-configurations">
@@ -47,7 +47,7 @@
   };
 </script>
 
-  <title>剑指offer题目思路简结（一） | 小本本</title>
+  <title>剑指offer题目思路简结-1 | 小本本</title>
   
 
 
@@ -178,7 +178,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/22/%E5%89%91%E6%8C%87offer%E9%A2%98%E7%9B%AE%E6%80%9D%E8%B7%AF%E7%AE%80%E7%BB%93%EF%BC%88%E4%B8%80%EF%BC%89/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/22/%E5%89%91%E6%8C%87offer%E9%A2%98%E7%9B%AE%E6%80%9D%E8%B7%AF%E7%AE%80%E7%BB%93-1/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/avatar.png">
@@ -191,7 +191,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          剑指offer题目思路简结（一）
+          剑指offer题目思路简结-1
         </h1>
 
         <div class="post-meta">
@@ -262,9 +262,9 @@
 </ol>
 <h2 id="剑指-Offer-07-重建二叉树"><a href="#剑指-Offer-07-重建二叉树" class="headerlink" title="剑指 Offer 07. 重建二叉树"></a>剑指 Offer 07. 重建二叉树</h2><p>关键点：</p>
 <ol>
-<li>中序遍历的第一个节点，是当前节点的root；但是没法区分剩余节点，哪些是左、右子树</li>
-<li>根据root，可以把前序遍历，分为左右子树两部分；借此得知左右子树的节点数量，也就能把中序遍历剩余节点分开</li>
-<li>对中序遍历拆分的左右子树，递归求解</li>
+<li>前序遍历的第一个节点，是当前节点的root；但是没法区分剩余节点，哪些是左、右子树</li>
+<li>根据root，可以把中序遍历，分为左右子树两部分；借此得知左右子树的节点数量，也就能把前序遍历剩余节点分开</li>
+<li>对前序遍历拆分的左右子树，递归求解</li>
 </ol>
 <h2 id="剑指-Offer-09-用两个栈实现队列"><a href="#剑指-Offer-09-用两个栈实现队列" class="headerlink" title="剑指 Offer 09. 用两个栈实现队列"></a>剑指 Offer 09. 用两个栈实现队列</h2><p>关键点：</p>
 <ol>
@@ -296,7 +296,7 @@
 </ol>
 <p>另外，由于该题要求至少分两段，因此需要对长度为最长时，稍微做一点特殊处理。</p>
 <p>如果是递归实现，是会提示超时的，因为其中存在很多重复的计算。可以用递归的另外两种实现方式：备忘录法，自底向上法。</p>
-<p>还有一种解法是根据数学规律，将n分为多个3。这种解法不具通用性，就不介绍了。</p>
+<p>还有一种解法是根据数学规律，将n分为尽量多个3。这种解法不具通用性，就不介绍了。</p>
 <h2 id="剑指-Offer-14-II-剪绳子-II"><a href="#剑指-Offer-14-II-剪绳子-II" class="headerlink" title="剑指 Offer 14- II. 剪绳子 II"></a>剑指 Offer 14- II. 剪绳子 II</h2><p>在 <a href="#剑指-offer-14--i-剪绳子">剑指 Offer 14- I. 剪绳子</a> 基础上，多了大数，就直接使用long类型，然后取模吧。</p>
 <h2 id="剑指-Offer-15-二进制中1的个数"><a href="#剑指-Offer-15-二进制中1的个数" class="headerlink" title="剑指 Offer 15. 二进制中1的个数"></a>剑指 Offer 15. 二进制中1的个数</h2><p>经典位运算题。n的每一位与 1 做 与操作，直到n变为0。</p>
 <h2 id="剑指-Offer-16-数值的整数次方"><a href="#剑指-Offer-16-数值的整数次方" class="headerlink" title="剑指 Offer 16. 数值的整数次方"></a>剑指 Offer 16. 数值的整数次方</h2><p>关键点，利用二分思想：   </p>
@@ -344,8 +344,8 @@
       <i class="fa fa-chevron-left"></i> 人生的一些大道理
     </a></div>
       <div class="post-nav-item">
-    <a href="/2020/06/22/%E5%89%91%E6%8C%87offer%E9%A2%98%E7%9B%AE%E6%80%9D%E8%B7%AF%E7%AE%80%E7%BB%93%EF%BC%88%E4%BA%8C%EF%BC%89/" rel="next" title="剑指offer题目思路简结（二）">
-      剑指offer题目思路简结（二） <i class="fa fa-chevron-right"></i>
+    <a href="/2020/06/22/%E5%89%91%E6%8C%87offer%E9%A2%98%E7%9B%AE%E6%80%9D%E8%B7%AF%E7%AE%80%E7%BB%93-2/" rel="next" title="剑指offer题目思路简结-2">
+      剑指offer题目思路简结-2 <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
@@ -426,7 +426,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">17</span>
+          <span class="site-state-item-count">19</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>

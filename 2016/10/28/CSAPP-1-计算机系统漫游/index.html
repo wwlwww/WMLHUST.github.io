@@ -20,21 +20,22 @@
     var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="总结常见的几种Web安全问题，包括XSS、CSRF、SQL注入。">
+  <meta name="description" content="写在前面工作找得差不多之后，总是感觉技术方向很迷茫。后面看一本书《暗时间》，上面说的对：  大量的新技术其实只是一层皮，背后的支撑技术其实都是十来年不变的东西。底层知识永不过时；算法数据结构永不过时；分析问题和解决问题的能力永不过时；强大的学习能力和旺盛的求知欲永不过时；你大脑的思维方式永不过时。   关于读书速度有选择地阅读。 对于一些逻辑混乱，作者都不知道自己问题是什么，或者上来就是技术方法细">
 <meta property="og:type" content="article">
-<meta property="og:title" content="常见web安全总结">
-<meta property="og:url" content="http://yoursite.com/2020/05/25/%E5%B8%B8%E8%A7%81web%E5%AE%89%E5%85%A8%E6%80%BB%E7%BB%93/index.html">
+<meta property="og:title" content="CSAPP-1-计算机系统漫游">
+<meta property="og:url" content="http://yoursite.com/2016/10/28/CSAPP-1-%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F%E6%BC%AB%E6%B8%B8/index.html">
 <meta property="og:site_name" content="小本本">
-<meta property="og:description" content="总结常见的几种Web安全问题，包括XSS、CSRF、SQL注入。">
-<meta property="og:image" content="http://yoursite.com/images/csrf.jpg">
-<meta property="article:published_time" content="2020-05-25T08:20:55.000Z">
-<meta property="article:modified_time" content="2020-05-25T08:20:55.000Z">
+<meta property="og:description" content="写在前面工作找得差不多之后，总是感觉技术方向很迷茫。后面看一本书《暗时间》，上面说的对：  大量的新技术其实只是一层皮，背后的支撑技术其实都是十来年不变的东西。底层知识永不过时；算法数据结构永不过时；分析问题和解决问题的能力永不过时；强大的学习能力和旺盛的求知欲永不过时；你大脑的思维方式永不过时。   关于读书速度有选择地阅读。 对于一些逻辑混乱，作者都不知道自己问题是什么，或者上来就是技术方法细">
+<meta property="og:image" content="http://yoursite.com/images/csapp-1.1.jpeg">
+<meta property="og:image" content="http://yoursite.com/images/csapp-1.2.jpeg">
+<meta property="og:image" content="http://yoursite.com/images/csapp-1.3.jpeg">
+<meta property="article:published_time" content="2016-10-28T13:39:38.000Z">
+<meta property="article:modified_time" content="2016-10-28T13:39:38.000Z">
 <meta property="article:author" content="WordGe">
-<meta property="article:tag" content="安全">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://yoursite.com/images/csrf.jpg">
+<meta name="twitter:image" content="http://yoursite.com/images/csapp-1.1.jpeg">
 
-<link rel="canonical" href="http://yoursite.com/2020/05/25/%E5%B8%B8%E8%A7%81web%E5%AE%89%E5%85%A8%E6%80%BB%E7%BB%93/">
+<link rel="canonical" href="http://yoursite.com/2016/10/28/CSAPP-1-%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F%E6%BC%AB%E6%B8%B8/">
 
 
 <script id="page-configurations">
@@ -47,7 +48,7 @@
   };
 </script>
 
-  <title>常见web安全总结 | 小本本</title>
+  <title>CSAPP-1-计算机系统漫游 | 小本本</title>
   
 
 
@@ -178,7 +179,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/05/25/%E5%B8%B8%E8%A7%81web%E5%AE%89%E5%85%A8%E6%80%BB%E7%BB%93/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/10/28/CSAPP-1-%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F%E6%BC%AB%E6%B8%B8/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/avatar.png">
@@ -191,7 +192,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          常见web安全总结
+          CSAPP-1-计算机系统漫游
         </h1>
 
         <div class="post-meta">
@@ -201,20 +202,10 @@
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2020-05-25 16:20:55" itemprop="dateCreated datePublished" datetime="2020-05-25T16:20:55+08:00">2020-05-25</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%AE%89%E5%85%A8/" itemprop="url" rel="index"><span itemprop="name">安全</span></a>
-                </span>
+              <time title="Created: 2016-10-28 21:39:38" itemprop="dateCreated datePublished" datetime="2016-10-28T21:39:38+08:00">2016-10-28</time>
             </span>
 
           
-            <div class="post-description">总结常见的几种Web安全问题，包括XSS、CSRF、SQL注入。</div>
 
         </div>
       </header>
@@ -225,61 +216,47 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h3 id="XSS，跨站脚本攻击"><a href="#XSS，跨站脚本攻击" class="headerlink" title="XSS，跨站脚本攻击"></a>XSS，跨站脚本攻击</h3><p>XSS的根本原因是，前端页面被嵌入一些恶意代码，这些恶意代码可能通过不同途径，注入进来。根据不同注入途径（或着说方式），可以分为反射型、持久型。</p>
-<ol>
-<li>反射型XSS   </li>
-</ol>
-<ul>
-<li>恶意伪造url -&gt; 骗取用户点击 -&gt; 页面从url取参数进行渲染。从而参数里的恶意代码被执行。</li>
-<li>案例：微博hellosamy事件</li>
-</ul>
-<ol start="2">
-<li>持久性XSS   </li>
-</ol>
-<ul>
-<li>在留言板、评论等场景提交恶意代码 -&gt; 后台未经处理，直接保存了前端提交的数据，-&gt; 再次访问或其他人访问时，前端展示相关内容，又把这些数据取出来进行渲染，从而恶意代码被执行。  </li>
-<li>案例：微信公众号XSS事件</li>
-</ul>
-<ol start="3">
-<li><p>应对：</p>
-<ol>
-<li>用户提交的数据，入库前预处理，很多xssfilter</li>
-<li>前端拼接Html时，也要做充分转义</li>
-<li>为了防止cookie盗用，重要cookie设置http-only为true</li>
-</ol>
-</li>
-<li><p>参考   </p>
+        <h3 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h3><p>工作找得差不多之后，总是感觉技术方向很迷茫。后面看一本书《暗时间》，上面说的对：</p>
 <blockquote>
-<p><code>https://tech.meituan.com/2018/09/27/fe-security.html</code></p>
+<p>大量的新技术其实只是一层皮，背后的支撑技术其实都是十来年不变的东西。底层知识永不过时；算法数据结构永不过时；分析问题和解决问题的能力永不过时；强大的学习能力和旺盛的求知欲永不过时；你大脑的思维方式永不过时。</p>
+</blockquote>
+<blockquote>
+<p>关于读书速度<br>有选择地阅读。 对于一些逻辑混乱，作者都不知道自己问题是什么，或者上来就是技术方法细节，而不是从方法背后的理念出发，直观解释的书，没必要一定说服自己读下去，继续读反而是增加烦恼，浪费时间。</p>
+</blockquote>
+<blockquote>
+<p>快or慢。 快慢从来不是一个问题，好书、知识密度大、需要思考的书就慢读。质量差，没啥的，该快就快，有必要过一遍的话，该不读就直接扔一边去，没必要纠结。<br>“三天打鱼，两天晒网”的人往往最后会变成“整天晒网，永不打鱼”。也就是说耐心和恒心吧。一本再厚的书，每天看一点，<strong>总有看完的一天</strong>。</p>
+</blockquote>
+<h3 id="言归正传"><a href="#言归正传" class="headerlink" title="言归正传"></a>言归正传</h3><ol>
+<li><p>信息就是 <strong>位+上下文</strong></p>
+</li>
+<li><p>利用直接存储器存取（DMA）技术，数据可以不通过处理器而直接从磁盘到达内存。</p>
+</li>
+<li><p>hello world 程序在执行的时候，hello world 字符串复制路径：硬盘-&gt;主存-&gt;寄存器-&gt;显示设备。</p>
+</li>
+<li><p>一个典型系统的硬件组成：<br><img src="/images/csapp-1.1.jpeg" alt="一个典型系统的硬件组成"></p>
+</li>
+<li><p>存储设备形成设备层次<br><img src="/images/csapp-1.2.jpeg" alt="存储器层次"></p>
+</li>
+<li><p>进程的上下文切换<br><img src="/images/csapp-1.3.jpeg" alt="这里写图片描述"><br>系统调用和中断的关系就在于，当进程发出系统调用申请的时候，会产生一个软件中断。产生这个软件中断以后，系统会去对这个软中断进行处理，这个时候进程就处于核心态了。</p>
+</li>
+<li><p>操作系统有两个基本的功能：</p>
+<blockquote>
+<ol>
+<li>防止硬件被失控的应用程序滥用。（应用程序只能通过系统调用的方式来请求）</li>
+<li>向应用程序提供简单一致的机制来控制复杂而又大相径庭的低级硬件设备。比如对于所有的I/O设备，包括硬盘、键盘、显示器、网络都视为文件，通过一组称为UNIX I/O的系统函数调用来实现输入输出。</li>
+</ol>
+</blockquote>
+</li>
+<li><p>操作系统内核是应用程序和硬件之间的媒介。提供三个基本的抽象：</p>
+<blockquote>
+<ol>
+<li>文件是I/O设备的抽象</li>
+<li>虚拟存储器是对主存和磁盘的抽象</li>
+<li>进程是对一个正在运行的程序的抽象，包括处理器、主存和IO设备。</li>
+</ol>
 </blockquote>
 </li>
 </ol>
-<h3 id="CSRF，跨站请求伪造（英語：Cross-site-request-forgery）"><a href="#CSRF，跨站请求伪造（英語：Cross-site-request-forgery）" class="headerlink" title="CSRF，跨站请求伪造（英語：Cross-site request forgery）"></a>CSRF，跨站请求伪造（英語：Cross-site request forgery）</h3><p>本质是浏览器在发起请求时，会自动带上对应域名下的cookie。该特性可能导致，用户在访问恶意网站时，在用户不知不觉的情况下，触发一些携带了用户身份信息（cookie）的请求。如下图所示：<br><img src="/images/csrf.jpg" alt="CSRF示意图"></p>
-<blockquote>
-<ol>
-<li>银行网站A，它以GET请求来完成银行转账的操作，如：<a href="http://www.mybank.com/Transfer.php?toBankId=11&amp;money=1000" target="_blank" rel="noopener">http://www.mybank.com/Transfer.php?toBankId=11&amp;money=1000</a></li>
-<li>危险网站B，它里面有一段HTML的代码如下：<pre><code class="html">　　<span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">http://www.mybank.com/Transfer.php?toBankId</span>=<span class="string">11&amp;money</span>=<span class="string">1000</span>&gt;</span></code></pre>
-</li>
-<li>首先，你登录了银行网站A，然后访问危险网站B，噢，这时你会发现你的银行账户少了1000块……</li>
-</ol>
-</blockquote>
-<p>在访问危险网站B的之前，你已经登录了银行网站A，而B中的img以GET的方式请求第三方资源（这里的第三方就是指银行网站了，原本这是一个合法的请求，但这里被不法分子利用了），你的浏览器会带上你的银行网站A的Cookie发出Get请求，去获取src指向的资源，结果银行网站服务器收到请求后，判断身份通过，所以就立刻进行转账操作……</p>
-<p>该例子里，一方面是由于用户上了小网站，另一方面，不应该用GET请求去更新资源（更改账户）。因为像src/script等标签都是默认用GET获取资源，如果再对前端熟悉一些的，可能会想到jsonp，就是利用script标签实现的。<br>很多邮箱图片默认不展示，CSRF也是原因之一。当然还有很多其他的风险，这个可以单开一篇，开开脑洞。</p>
-<ol>
-<li><p>vs 跨域？<br>很多人会有疑问，浏览器不是有跨域限制吗，为什么还会出现在A页面，访问B服务器的情况。对于跨域请求，<strong>浏览器还是会正常发出</strong>，收到response后，会判断源和当前页面的源是否是属于同源，如果不属于，则需要根据<code>access-control-allow-origin</code>等header，判断server端是否允许跨域。   </p>
-</li>
-<li><p>应对<br>主要通过两个关键点：   </p>
-<ol>
-<li>虽然A网站可以向B服务器发请求，但是由于跨域限制，没法处理对应的response。因此一些更新资源的操作，最好用POST，更好的是使用restful风格。另一方面，也可以增加二次确认，比如引入验证码，实际上相当于一个动态的token。</li>
-<li>由于正规的浏览器，对cookie访问，也要求同源。因此可以再query里增加一些cookie里才有的信息，在服务端校验query和cookie里对应的参数，如果不一致则为恶意。   </li>
-</ol>
-</li>
-</ol>
-<p>其他的方法，还有增加referer，但是有的时候请求不带referer，比如非http协议页面发出的请求（ftp之类的）、https页面发出的http请求等，因此该方法有一定的漏洞。</p>
-<h3 id="SQL注入"><a href="#SQL注入" class="headerlink" title="SQL注入"></a>SQL注入</h3><p>关键点：<br>    1. 不要相信请求携带的参数，不要直接拿过来拼接SQL语句。<br>SQL注入的防范很成熟，使用prepare statement即可，常用的client lib里都会实现。但是表名不支持参数化，因此表名还是得使用代码拼接的方式。这就要求表名不能是前端输入的，或者增加表名白名单校验。   </p>
-<blockquote>
-<p>从一条sql执行过程来说，编译 -&gt; 执行。一般情况是连带参数，一起编译，就会出现注入情况。<br>  使用参数化查询的形式，会提前对模板进行预编译，而每个?占位的参数，只会被数据库当做一个完整的参数处理。</p>
-</blockquote>
 
     </div>
 
@@ -288,22 +265,16 @@
     
 
       <footer class="post-footer">
-          <div class="post-tags">
-              <a href="/tags/%E5%AE%89%E5%85%A8/" rel="tag"># 安全</a>
-          </div>
 
         
 
 
         
     <div class="post-nav">
+      <div class="post-nav-item"></div>
       <div class="post-nav-item">
-    <a href="/2020/05/20/MySQL%E7%9F%A5%E8%AF%86%E7%82%B9/" rel="prev" title="MySQL知识点">
-      <i class="fa fa-chevron-left"></i> MySQL知识点
-    </a></div>
-      <div class="post-nav-item">
-    <a href="/2020/05/28/%E5%85%B3%E4%BA%8E%E5%B7%A5%E4%BD%9C%E7%9A%84%E4%B8%80%E4%BA%9B%E6%83%B3%E6%B3%95/" rel="next" title="关于工作的一些想法.md">
-      关于工作的一些想法.md <i class="fa fa-chevron-right"></i>
+    <a href="/2016/10/30/CSAPP-2-%E4%BF%A1%E6%81%AF%E7%9A%84%E8%A1%A8%E7%A4%BA%E5%92%8C%E5%A4%84%E7%90%86/" rel="next" title="CSAPP-2-信息的表示和处理">
+      CSAPP-2-信息的表示和处理 <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
@@ -368,7 +339,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#XSS，跨站脚本攻击"><span class="nav-number">1.</span> <span class="nav-text">XSS，跨站脚本攻击</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CSRF，跨站请求伪造（英語：Cross-site-request-forgery）"><span class="nav-number">2.</span> <span class="nav-text">CSRF，跨站请求伪造（英語：Cross-site request forgery）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SQL注入"><span class="nav-number">3.</span> <span class="nav-text">SQL注入</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#写在前面"><span class="nav-number">1.</span> <span class="nav-text">写在前面</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#言归正传"><span class="nav-number">2.</span> <span class="nav-text">言归正传</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
