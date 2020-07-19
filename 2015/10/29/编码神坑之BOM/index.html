@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="今天在做项目时，发现了一个超奇葩的问题。 背景条件：  客户端 java  后台php   问题： php后台使用”echo $result”返回了一个字符串“success”，但是这个字符串和java本地的”success”字符串用equals比较时竟然返回结果是false。 java端的代码： 过程： 哎哟喂，这个可把我给难住了，百思不得其解。直接打印返回的刚开始根据网上查到equals函数实">
+<meta property="og:type" content="article">
+<meta property="og:title" content="编码神坑之BOM">
+<meta property="og:url" content="http://yoursite.com/2015/10/29/%E7%BC%96%E7%A0%81%E7%A5%9E%E5%9D%91%E4%B9%8BBOM/index.html">
+<meta property="og:site_name" content="小本本">
+<meta property="og:description" content="今天在做项目时，发现了一个超奇葩的问题。 背景条件：  客户端 java  后台php   问题： php后台使用”echo $result”返回了一个字符串“success”，但是这个字符串和java本地的”success”字符串用equals比较时竟然返回结果是false。 java端的代码： 过程： 哎哟喂，这个可把我给难住了，百思不得其解。直接打印返回的刚开始根据网上查到equals函数实">
+<meta property="og:image" content="http://yoursite.com/images/bom-1.png">
+<meta property="og:image" content="http://yoursite.com/images/bom-2.png">
+<meta property="og:image" content="http://yoursite.com/images/bom-3.png">
+<meta property="og:image" content="http://yoursite.com/images/bom-4.png">
+<meta property="og:image" content="http://yoursite.com/images/bom-5.png">
+<meta property="og:image" content="http://yoursite.com/images/bom-6.png">
+<meta property="og:image" content="http://yoursite.com/images/bom-7.png">
+<meta property="og:image" content="http://yoursite.com/images/bom-7.2.png">
+<meta property="og:image" content="http://yoursite.com/images/bom-8.png">
+<meta property="og:image" content="http://yoursite.com/images/bom-9.png">
+<meta property="article:published_time" content="2015-10-29T13:43:29.000Z">
+<meta property="article:modified_time" content="2015-10-29T13:43:29.000Z">
+<meta property="article:author" content="WordGe">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yoursite.com/images/bom-1.png">
+
+<link rel="canonical" href="http://yoursite.com/2015/10/29/%E7%BC%96%E7%A0%81%E7%A5%9E%E5%9D%91%E4%B9%8BBOM/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-Hans'
+  };
+</script>
+
+  <title>编码神坑之BOM | 小本本</title>
+  
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?048408dcae04570297e1804bd477cac3";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="小本本" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">小本本</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">学而时习之，不亦说乎</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2015/10/29/%E7%BC%96%E7%A0%81%E7%A5%9E%E5%9D%91%E4%B9%8BBOM/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.png">
+      <meta itemprop="name" content="WordGe">
+      <meta itemprop="description" content="厉害了~">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="小本本">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          编码神坑之BOM
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2015-10-29 21:43:29" itemprop="dateCreated datePublished" datetime="2015-10-29T21:43:29+08:00">2015-10-29</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>今天在做项目时，发现了一个超奇葩的问题。</p>
+<p>背景条件：</p>
+<ol>
+<li><p>客户端 java</p>
+</li>
+<li><p>后台php</p>
+</li>
+</ol>
+<p>问题：</p>
+<p>php后台使用”echo $result”返回了一个字符串“success”，但是这个字符串和java本地的”success”字符串用equals比较时竟然返回结果是false。</p>
+<p>java端的代码：<br><img src="/images/bom-1.png" alt=""></p>
+<p>过程：</p>
+<p>哎哟喂，这个可把我给难住了，百思不得其解。直接打印返回的刚开始根据网上查到equals函数实现，自己写个函数替代equals，如下：</p>
+<p>然后就单步跟踪调试了，发现281行的循环根本进不去，然后看了下变量各个字符的值，表面的问题终于找到了</p>
+<p>这是返回字符串变量的各个位的字符。<br><img src="/images/bom-2.png" alt=""></p>
+<p>这是本地用String succString = “success”生成的一个字符串。<br><img src="/images/bom-3.png" alt=""></p>
+<p>可以发现，虽然第一行显示字符串的值都是“success”，然而，count和value一项都不一样。。</p>
+<p>这简直醉了，难道是java网络数据读取的问题？（我为什么会怀疑到这个点。。）</p>
+<p>继续找直接找到了post请求的返回数据，从里面一层一层也可以找到这个字符串的所在：</p>
+<p><img src="/images/bom-4.png" alt=""></p>
+<p>再继续展开value：<br><img src="/images/bom-5.png" alt=""></p>
+<p>但是，为什么里面是这样子的，我还没想通，看起来也不像是因为字节序的问题，wireshark抓包结果<br><img src="/images/bom-6.png" alt=""></p>
+<p>最后的7个数字确实跟success的ASCII码是一样的。</p>
+<p>可以确认，之所以字符串前面有空白字符，是因为后台传返回数据即是这样。</p>
+<p>为了查看后台返回的数据，我又写了个表单，用来直接模拟post请求：<br><img src="/images/bom-7.png" alt=""><br><img src="/images/bom-7.2.png" alt=""></p>
+<p>输入数据，返回结果。表面没问题<br><img src="/images/bom-8.png" alt=""></p>
+<p>审查元素：<br><img src="/images/bom-9.png" alt=""></p>
+<p>可以看到，实际前面多了一串莫名其妙的字符 &amp;#65279</p>
+<p>这一串数字可以直接google到，它其实是UTF-8编码的一个叫BOM的头。</p>
+<p>BOM 全称 bom order mark，”EF BB BF” 这三个字节就叫BOM。</p>
+<p>(这个为什么这么叫，似乎应该是固定好的标志，我试着用unicode解码并没有解出来”BOM“)。</p>
+<p>在utf8文件中常用BOM来表明这个文件是UTF-8文件，而BOM的本意是在utf16中用。</p>
+<p>utf-8文件在php中输出的时候bom是会被输出的，所以要在php中使用utf-8，必须要是使用不带bom头的utf-8文件。</p>
+<p>wiki的解释非常不错，在里面也找到了各种编码的BOM标志。</p>
+<p><a href="https://zh.wikipedia.org/wiki/%E4%BD%8D%E5%85%83%E7%B5%84%E9%A0%86%E5%BA%8F%E8%A8%98%E8%99%9F" target="_blank" rel="noopener">https://zh.wikipedia.org/wiki/%E4%BD%8D%E5%85%83%E7%B5%84%E9%A0%86%E5%BA%8F%E8%A8%98%E8%99%9F</a></p>
+<p>其次，windows的记事本保存的文本都是有BOM的，notepad++等文本编辑器可以设置无bom编码格式。</p>
+<p>参考这个知乎问题：<a href="http://www.zhihu.com/question/20167122" target="_blank" rel="noopener">http://www.zhihu.com/question/20167122</a></p>
+<p>嗯，修改编码格式后，一切正常。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2015/10/16/JAVA%E6%9D%83%E9%99%90%E4%BF%AE%E9%A5%B0%E7%AC%A6/" rel="prev" title="JAVA权限修饰符">
+      <i class="fa fa-chevron-left"></i> JAVA权限修饰符
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2016/03/24/java-io-FileNotFoundException-%E5%86%8D%E6%AC%A1%E8%B8%A9%E5%9D%91windows%E7%BC%96%E7%A0%81/" rel="next" title="java.io.FileNotFoundException-再次踩坑windows编码">
+      java.io.FileNotFoundException-再次踩坑windows编码 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="lv-container" data-id="city" data-uid="MTAyMC81MDA3NC8yNjU2NQ=="></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="WordGe"
+      src="/avatar.png">
+  <p class="site-author-name" itemprop="name">WordGe</p>
+  <div class="site-description" itemprop="description">厉害了~</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">28</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">WordGe</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+  <script>
+    (function(){
+      var canonicalURL, curProtocol;
+      //Get the <link> tag
+      var x=document.getElementsByTagName("link");
+		//Find the last canonical URL
+		if(x.length > 0){
+			for (i=0;i<x.length;i++){
+				if(x[i].rel.toLowerCase() == 'canonical' && x[i].href){
+					canonicalURL=x[i].href;
+				}
+			}
+		}
+    //Get protocol
+	    if (!canonicalURL){
+	    	curProtocol = window.location.protocol.split(':')[0];
+	    }
+	    else{
+	    	curProtocol = canonicalURL.split(':')[0];
+	    }
+      //Get current URL if the canonical URL does not exist
+	    if (!canonicalURL) canonicalURL = window.location.href;
+	    //Assign script content. Replace current URL with the canonical URL
+      !function(){var e=/([http|https]:\/\/[a-zA-Z0-9\_\.]+\.baidu\.com)/gi,r=canonicalURL,t=document.referrer;if(!e.test(r)){var n=(String(curProtocol).toLowerCase() === 'https')?"https://sp0.baidu.com/9_Q4simg2RQJ8t7jm9iCKT-xh_/s.gif":"//api.share.baidu.com/s.gif";t?(n+="?r="+encodeURIComponent(document.referrer),r&&(n+="&l="+r)):r&&(n+="?l="+r);var i=new Image;i.src=n}}(window);})();
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script>
+NexT.utils.loadComments(document.querySelector('#lv-container'), () => {
+  window.livereOptions = {
+    refer: location.pathname.replace(CONFIG.root, '').replace('index.html', '')
+  };
+  (function(d, s) {
+    var j, e = d.getElementsByTagName(s)[0];
+    if (typeof LivereTower === 'function') { return; }
+    j = d.createElement(s);
+    j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+    j.async = true;
+    e.parentNode.insertBefore(j, e);
+  })(document, 'script');
+});
+</script>
+
+</body>
+</html>
