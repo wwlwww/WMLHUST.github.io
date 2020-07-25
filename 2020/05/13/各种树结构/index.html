@@ -253,6 +253,10 @@
 <h3 id="LSM，Log-Structured-Merged-Tree"><a href="#LSM，Log-Structured-Merged-Tree" class="headerlink" title="LSM，Log-Structured Merged Tree"></a>LSM，Log-Structured Merged Tree</h3><ol>
 <li><p>核心思想：<strong>放弃部分读性能，提高写性能。</strong> 适用于kv存储。</p>
 </li>
+<li><p>内存中的memtable，磁盘上的sstable。读取的时候，需要遍历sstable，这里的 优化是，使用是bloom filter，确定一个Key是否在sstable里。</p>
+</li>
+<li><p>一般LSM-Trees会配合内存排序，内存里将写数据缓冲（通常是一个红黑树、跳表之类的结构）。等积累得足够多之后，使用归并排序将数据合并，写入磁盘。</p>
+</li>
 <li><p>应用：rocksDB，levelDB，hbase</p>
 <ul>
 <li><p>rocksDB：c++编写的kv存储引擎，基于levelDB改造</p>
@@ -260,13 +264,11 @@
 <li><p>levelDB：kv存储引擎</p>
 </li>
 <li><p>hbase: 分布式存储，列数据库，应对大量数据（亿级以上）   </p>
-<p>这些思想类似levelDB，但也有一些优化和改进，比如levelDB为了避免sstable过多，以及降低sstable合并过程中的开销，增加了level的概念。如果没有level，新sstable需要和旧的sstable比较，随着数据量的增多，新sstable需要和越来越多的sstable合并，从而效率降低。（如果每次合并后只留下一个大的sstable，效率一样会降低，因为涉及到插入操作。）有了level，上下层level，相关的sstable数量将会得到控制。从而加快压缩、合并的过程。</p>
+<p>这些思想类似lsm，但也有一些优化和改进，比如levelDB为了避免sstable过多，以及降低sstable合并过程中的开销，增加了level的概念。如果没有level，新sstable需要和旧的sstable比较，随着数据量的增多，新sstable需要和越来越多的sstable合并，从而效率降低。（如果每次合并后只留下一个大的sstable，效率一样会降低，因为涉及到插入操作。）有了level，上下层level，待比较的相关sstable数量将会得到控制。从而加快压缩、合并的过程。<br>除下按分层合并，还有按大小合并，hbase使用该种方法。两种思想，一种是更新的和更老的合并，一种是更小的和更大的合并。</p>
+<p>sstable会保存所有写入的值（K-V），新的value并不会覆盖旧的value，而是读取的时候，从新的segment开始找，找到就停下。压缩、合并的过程，就是保留新的value，去除旧的value的过程。<br>另外，为了防止系统崩溃，数据丢失，也会使用额外的WAL日志。相当于每次写入，需要更新有序的memtable，以及append WAL日志。   </p>
+<p>Lucene(ES的索引引擎)，也是用了类似的思想存储它的倒排索引。首先根据类lsm思想找到单词对应的倒排索引值（文档ID列表），再根据文档ID，获取具体的文档。</p>
 </li>
 </ul>
-</li>
-<li><p>内存中的memtable，磁盘上的sstable。读取的时候，需要遍历sstable，这里的 优化是，使用是bloom filter，确定一个Key是否在sstable里。</p>
-</li>
-<li><p>一般LSM-Trees会配合内存排序，内存里将写数据缓冲（通常是一个红黑树、跳表之类的结构）。等积累得足够多之后，使用归并排序将数据合并，写入磁盘。</p>
 </li>
 <li><p>参考资料</p>
 <ul>
@@ -280,6 +282,8 @@
 <li><p>写过程<br> 但是B树面对高并发写的时候，压力很大。B树把所有的压力都放到了写操作的时候，从根节点索引到数据存储的位置，可能需要多次读文件；真正插入的时候，又可能会引起page的分裂，多次写文件。   </p>
 <p> LSM在写的时候，直接写入内存，然后利用红黑树保持内存中的数据有序，由后台线程定期或被触发，去merge和持久化到磁盘。也会使用WAL方式记录log，避免数据丢失。  </p>
 <p> 当写比读多时，LSM树相比于B树有更好的性能。因为随着insert操作，为了维护B树结构，节点分裂。读磁盘的随机读写概率会变大，性能会逐渐减弱。LSM把多次IO，批量变成一次IO，复用了磁盘寻道时间，极大提升效率。</p>
+</li>
+<li><p>总结下，通常LSM树的写入更快，B树的读取速度更快。</p>
 </li>
 </ol>
 
@@ -386,7 +390,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">28</span>
+          <span class="site-state-item-count">29</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>

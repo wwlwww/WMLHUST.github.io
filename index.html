@@ -172,6 +172,117 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/07/25/%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.png">
+      <meta itemprop="name" content="WordGe">
+      <meta itemprop="description" content="厉害了~">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="小本本">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/07/25/%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1/" class="post-title-link" itemprop="url">分布式事务</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-07-25 23:50:31" itemprop="dateCreated datePublished" datetime="2020-07-25T23:50:31+08:00">2020-07-25</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%90%8E%E7%AB%AF/" itemprop="url" rel="index"><span itemprop="name">后端</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%90%8E%E7%AB%AF/%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">系统原理</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p><strong>分布式事务是个复杂繁琐的问题，如果能够通过调整业务或架构，避免分布式事务，尽量避免。</strong></p>
+<p>下面总结、对比一下常见的分布式事务实现方案：</p>
+<h3 id="1-2PC-XA"><a href="#1-2PC-XA" class="headerlink" title="1. 2PC / XA"></a>1. 2PC / XA</h3><p>XA规范的协议原理即为 2PC。关键点：</p>
+<ol>
+<li>需要一个事务协调器。</li>
+<li>每个实例，分为两个阶段，第一阶段<code>prepare</code>，第二阶段，<code>commit/rollback</code>。   </li>
+</ol>
+<p>存在问题：</p>
+<ol>
+<li>事务协调器，单点故障。故障时，为了保证事务连续，只能等待该协调器重启恢复。</li>
+<li>性能问题，阶段1，锁定资源后，必须要等所有节点返回，然后才能一同进入阶段2。</li>
+<li>如果commit部分成功，将出现数据不一致。此时只能不断重试，直到成功。</li>
+</ol>
+<h3 id="2-3PC"><a href="#2-3PC" class="headerlink" title="2. 3PC"></a>2. 3PC</h3><p>3PC的三个阶段分别是<code>canCommit</code>、<code>preCommit</code>、<code>doCommit</code>。<br>相比两阶段提交：</p>
+<ol>
+<li>多了preCommit一步，实际是把2PC划分得更细。2PC在阶段1时，如果部分成功，则rollback。而在阶段2时，如果部分成功（实际上，每个实例应该保证，一旦收到commit，必定能成功。前提条件检查应放在阶段1做。），则只能不断重试。3PC拆分得更细后，根据不同阶段的超时，执行不同的动作。<br>当然，2PC中，实例也可以在阶段2，等待commit超时后rollback。不能是commit，因为可能阶段1不是全部成功，出于一致性考虑，只能rollback，然后调用方不断重试。<br>3PC分为两个阶段后，超时更好控制。在阶段2等待preCommit超时和2PC中等待commit超时一样，需要rollback。但是如果在阶段3等待doCommit超时，至少能确定canCommit都是成功的，因此可以执行commit。</li>
+<li>相比2PC，增加超时功能，减少对事务协调器的依赖，避免持续阻塞：<ul>
+<li>实例等待preCommit指令时，超时后自动 rollback</li>
+<li>实例等待doCommit指令时，超时后自动 commit</li>
+</ul>
+</li>
+</ol>
+<p>然而，3PC也需要协调者，协调者也需要等待各个实例的回复，这些回复也可能超时。<strong>根源在于，通信信道没有保证，因此两个节点之间，如果超时，无法确定对方是宕机了，还是消息丢失了。所以，此时是成功了，还是失败了呢？</strong></p>
+<h3 id="3-TCC"><a href="#3-TCC" class="headerlink" title="3. TCC"></a>3. TCC</h3><p>TCC (<code>Try - Confirm - Cancel</code>)<br>相比TCC，更偏向应用层一点，比如服务间调用，各阶段之间会穿插一些业务逻辑等。2PC、3PC更像是协调两个数据库实例。比如：一个订单服务需要支付、库存、积分、物流多个服务的状态保持一致。一般使用一些TCC事务框架，框架需要保存事务日志之类的。   </p>
+<ul>
+<li>如果try失败，调用cancel</li>
+<li>如果confirm失败，不停重试confirm</li>
+<li>如果cancel失败，不停重试cancel   </li>
+</ul>
+<p>因此try/confirm/cancel接口需要幂等，因此需要一些事务ID之类的东西，TCC框架可以协助实现。</p>
+<p>参考文章：</p>
+<ul>
+<li>介绍TCC流程，<a href="https://juejin.im/post/5bf201f7f265da610f63528a" target="_blank" rel="noopener">https://juejin.im/post/5bf201f7f265da610f63528a</a></li>
+<li>介绍TCC细节，<a href="https://yemablog.com/posts/tcc-1" target="_blank" rel="noopener">https://yemablog.com/posts/tcc-1</a></li>
+</ul>
+<h3 id="4-消息中间件（实现的是最终一致）"><a href="#4-消息中间件（实现的是最终一致）" class="headerlink" title="4. 消息中间件（实现的是最终一致）"></a>4. 消息中间件（实现的是最终一致）</h3><p>这个没啥特别的，主要是利用消息队列解耦，从而A完成事务后可直接返回，B从MQ中取消息，发生错误则不断尝试。<br><img src="/images/tx-mq.jpg" alt=""></p>
+<p>特别提一下rocketMQ事务消息的实现原理：<br>rocketMQ的消息发送，分为两个阶段：prepare和confirm。<br>当confirm后，broker才会将消息传递给消费方。<br>对于一直未confirm的消息，broker会定期扫描，询问发送方此消息，是发送还是取消。   </p>
+<p>再特别提一下，两个服务之间，最终一致性的关键：<br>持久化中间件（MySQL，消息对列等），配合幂等重试。<br>比如转账，A服务扣了钱，记录进DB。异步调用B服务加钱接口，失败则重试，直到成功。（失败多次后，一般会人工介入）   </p>
+<h3 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h3><ol>
+<li><a href="https://xiaomi-info.github.io/2020/01/02/distributed-transaction/" target="_blank" rel="noopener">https://xiaomi-info.github.io/2020/01/02/distributed-transaction/</a></li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/07/12/python%E5%A4%9A%E5%85%83%E8%B5%8B%E5%80%BC%E7%9A%84%E4%B8%80%E4%B8%AA%E9%A1%BA%E5%BA%8F%E9%97%AE%E9%A2%98/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -686,6 +797,8 @@
 
 2. 重复性，还是不用思考 -->
 
+<p>待写。。</p>
+
       
     </div>
 
@@ -755,84 +868,6 @@
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2020/05/25/%E5%B8%B8%E8%A7%81web%E5%AE%89%E5%85%A8%E6%80%BB%E7%BB%93/">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/05/20/MySQL%E7%9F%A5%E8%AF%86%E7%82%B9/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/avatar.png">
-      <meta itemprop="name" content="WordGe">
-      <meta itemprop="description" content="厉害了~">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="小本本">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/05/20/MySQL%E7%9F%A5%E8%AF%86%E7%82%B9/" class="post-title-link" itemprop="url">MySQL知识点</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2020-05-20 11:09:35" itemprop="dateCreated datePublished" datetime="2020-05-20T11:09:35+08:00">2020-05-20</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" itemprop="url" rel="index"><span itemprop="name">数据库</span></a>
-                </span>
-                  , 
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>总结一些mysql的知识点，包括范式、索引、事务、锁等等。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/05/20/MySQL%E7%9F%A5%E8%AF%86%E7%82%B9/">
                 Read more &raquo;
               </a>
             </div>
@@ -923,7 +958,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">28</span>
+          <span class="site-state-item-count">29</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
