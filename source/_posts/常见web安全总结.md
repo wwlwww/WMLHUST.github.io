@@ -1,7 +1,7 @@
 ---
 title: 常见web安全总结
-tags: [安全]
-categories: [安全]
+tags: [web安全]
+categories: [后端,安全]
 comments: true
 date: 2020-05-25 16:20:55
 updated: 2020-05-25 16:20:55
