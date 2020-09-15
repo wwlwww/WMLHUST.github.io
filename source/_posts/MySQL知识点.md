@@ -137,6 +137,8 @@ Serialization |
 
     因为redo log的写入单位就是512字节，也就是磁盘IO的最小单位，因此可以保证原子性，不会导致数据损坏。
 
+## 参考
+1. [索引工作原理](https://github.com/0voice/interview_internal_reference/blob/master/09.MySQL%E7%AF%87/9.1.4%20%E7%B4%A2%E5%BC%95%E7%9A%84%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86%E5%8F%8A%E5%85%B6%E7%A7%8D%E7%B1%BB.md)
 
 
 
