@@ -41,7 +41,8 @@ description:
 6. 整数的三种表示方式：原码、反码、补码，这三种方式可以互相通过一定的运算转换，但是它们都是独立的表示方式，都可以独立地表示正、负整数。
     - 原码：最高位有效位，剩下的位决定值。这种表示方式最好理解。
     - 反码：最高位的权是，<img src="http://chart.googleapis.com/chart?cht=tx&chl=\Large -({2^{w-1}-1})" style="border:none;">，其他跟补码是一样的。
-    - 补码，现在计算机里大多用的就是补码，原因是加减操作可以使用统一的位操作。计算时，最高位的权为<img src="http://chart.googleapis.com/chart?cht=tx&chl=\Large -({2^{w-1}})" style="border:none;">。<br>补码可以从原码转换过来，正数的补码表示跟其原码表示相同，负数的补码是原码的按位取反再加一。
+    - 补码，现在计算机里大多用的就是补码，原因是加减操作可以使用统一的位操作。计算时，最高位的权为<img src="http://chart.googleapis.com/chart?cht=tx&chl=\Large -({2^{w-1}})" style="border:none;">  
+    补码可以从原码转换过来，正数的补码表示跟其原码表示相同，负数的补码是原码的按位取反再加一。
 
     此外，负数的补码往前扩充1值是不变的，如0xFF表示-1，0xFFFF还是-1，注意二进制轴上的对应关系。
 

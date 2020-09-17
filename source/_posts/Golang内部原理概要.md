@@ -115,11 +115,11 @@ golang使用四叉堆来维护众多的timer。对定时器的检查有两个时
 先说一下给对象 object 分配内存的主要流程：
 
 1. object size > 32K，则使用 mheap 直接分配。
-2. object size < 16 byte，使用 mcache 的小对象分配器 tiny 直接分配。（其实 tiny 就是一个指针，暂且这么说吧。）
 3. object size > 16 byte && size <=32K byte 时，先使用 mcache 中对应的 size class 分配。
-4. 如果 mcache 对应的 size class 的 span 已经没有可用的块，则向 mcentral 请求。
-5. 如果 mcentral 也没有可用的块，则向 mheap 申请，并切分。
-6. 如果 mheap 也没有合适的 span，则想操作系统申请。
+4. object size < 16 byte，使用 mcache 的小对象分配器 tiny 直接分配。（其实 tiny 就是一个指针，暂且这么说吧。）
+5. 如果 mcache 对应的 size class 的 span 已经没有可用的块，则向 mcentral 请求。
+6. 如果 mcentral 也没有可用的块，则向 mheap 申请，并切分。
+7. 如果 mheap 也没有合适的 span，则想操作系统申请。
 
 ### 8. 相关资料
 - 也谈goroutine调度器：https://tonybai.com/2017/06/23/an-intro-about-goroutine-scheduler/
