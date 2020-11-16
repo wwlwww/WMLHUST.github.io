@@ -121,7 +121,7 @@ golang使用四叉堆来维护众多的timer。对定时器的检查有两个时
 6. 如果 mcentral 也没有可用的块，则向 mheap 申请，并切分。
 7. 如果 mheap 也没有合适的 span，则想操作系统申请。
 
-### 8. 相关资料
+### 9. 相关资料
 - 也谈goroutine调度器：https://tonybai.com/2017/06/23/an-intro-about-goroutine-scheduler/
 - Go 语言设计与实现：https://draveness.me/golang/ ，直接解读runtime源码
 - 关于Golang GC的一些误解：https://zhuanlan.zhihu.com/p/77943973
